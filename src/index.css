@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    background-color: #E9F1F4;
+    color: #0F172A;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.lab-canvas-bg {
+  background-color: #E8F0F4;
+  background-image:
+    radial-gradient(circle at 12% 14%, rgba(16, 185, 129, 0.14) 0%, transparent 42%),
+    radial-gradient(circle at 88% 12%, rgba(2, 132, 199, 0.15) 0%, transparent 44%),
+    radial-gradient(circle at 52% 92%, rgba(20, 184, 166, 0.10) 0%, transparent 50%),
+    radial-gradient(rgba(15, 23, 42, 0.055) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
+}
+
+@keyframes flowDash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes spinRotor {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bubbleRise {
+  0% {
+    transform: translateY(0px);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-48px);
+    opacity: 0;
+  }
+}
+
+.animate-flow-dash {
+  stroke-dasharray: 6 6;
+  animation: flowDash 1.1s linear infinite;
+}
+
+.animate-flow-dash-slow {
+  stroke-dasharray: 5 7;
+  animation: flowDash 2.2s linear infinite;
+}
+
+.animate-rotor {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spinRotor 3s linear infinite;
+}
+
+.animate-bubble {
+  animation: bubbleRise 1.8s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-flow-dash,
+  .animate-flow-dash-slow,
+  .animate-rotor,
+  .animate-bubble {
+    animation: none !important;
+  }
+}

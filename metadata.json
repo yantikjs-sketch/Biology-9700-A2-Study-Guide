@@ -1,0 +1,6 @@
+{
+  "name": "Bio9700 A2 Revision Studio",
+  "description": "Interactive Cambridge A2 Biology (9700) revision studio featuring animated Respiration and Photosynthesis diagrams, limiting-factor simulations, and exam-style practice quizzes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
