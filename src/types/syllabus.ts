@@ -1,13 +1,14 @@
 export type TopicId =
   | 'respiration'
   | 'photosynthesis'
+  | 'control'
   | 'roadmap';
 
 export type QuizDifficulty = 'Core Recall' | 'Application & Data';
 
 export interface QuizQuestion {
   id: string;
-  topicId: 'respiration' | 'photosynthesis';
+  topicId: 'respiration' | 'photosynthesis' | 'control';
   syllabusRef: string;
   difficulty: QuizDifficulty;
   prompt: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface TopicQuickNotesProps {
-  topicId: 'respiration' | 'photosynthesis';
+  topicId: 'respiration' | 'photosynthesis' | 'control';
 }
 
 export const TopicQuickNotes: React.FC<TopicQuickNotesProps> = ({
@@ -120,6 +120,179 @@ export const TopicQuickNotes: React.FC<TopicQuickNotesProps> = ({
               </li>
             </ul>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (topicId === 'control') {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-xs">
+          <h2 className="text-xl font-semibold text-slate-900">
+            01. Striated Muscle Sarcomere Band Changes (9700 Exam Table)
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            During contraction, thin actin filaments slide inward over thick myosin filaments toward the M-line.
+          </p>
+
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-sm sm:text-base border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-600">
+                  <th className="py-3 pr-4 font-medium">Structure / Zone</th>
+                  <th className="py-3 pr-4 font-medium">Composition</th>
+                  <th className="py-3 font-medium">Change on Contraction</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">A-band (Dark)</td>
+                  <td className="py-3.5 pr-4 text-slate-600">
+                    Full length of thick myosin filaments (+ overlapping actin)
+                  </td>
+                  <td className="py-3.5 font-mono font-semibold text-violet-700">
+                    Stays CONSTANT
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">I-band (Light)</td>
+                  <td className="py-3.5 pr-4 text-slate-600">
+                    Thin actin filaments only (no myosin overlap)
+                  </td>
+                  <td className="py-3.5 font-mono font-semibold text-sky-700">
+                    Shortens / narrows
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">H-zone</td>
+                  <td className="py-3.5 pr-4 text-slate-600">
+                    Central region of A-band with myosin only
+                  </td>
+                  <td className="py-3.5 font-mono font-semibold text-amber-700">
+                    Shortens / may disappear
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Z-lines (Sarcomere)</td>
+                  <td className="py-3.5 pr-4 text-slate-600">
+                    Attachment discs anchoring actin filaments
+                  </td>
+                  <td className="py-3.5 font-mono font-semibold text-slate-900">
+                    Move closer together
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="rounded-xl border border-slate-200/90 bg-white p-6 space-y-3 shadow-xs">
+            <h3 className="text-lg font-semibold text-slate-900">
+              02. Action Potential &amp; Cholinergic Synapse Checklist
+            </h3>
+            <ul className="space-y-2.5 text-base leading-relaxed text-slate-700">
+              <li>
+                <span className="font-semibold text-slate-900">Resting (-70 mV):</span>{' '}
+                3 Na+ pumped out, 2 K+ pumped in by Na+/K+ ATPase; K+ leak channels open while voltage-gated Na+ channels stay closed.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Saltatory conduction:</span>{' '}
+                Myelin insulates internodes so local circuits jump between nodes of Ranvier (~50× faster).
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Synaptic roles:</span>{' '}
+                Ca2+ influx → ACh exocytosis → ligand-gated Na+ influx → AChE hydrolysis into choline + ethanoic acid ensures unidirectional transmission and prevents overstimulation.
+              </li>
+            </ul>
+          </div>
+
+          <div className="rounded-xl border border-slate-200/90 bg-white p-6 space-y-3 shadow-xs">
+            <h3 className="text-lg font-semibold text-slate-900">
+              03. Plant Coordination (9700 Key Mechanisms)
+            </h3>
+            <ul className="space-y-2.5 text-base leading-relaxed text-slate-700">
+              <li>
+                <span className="font-semibold text-slate-900">Venus flytrap:</span>{' '}
+                2 hair deflections within ~20–30 s fire an action potential across lobes → H+ wall acidification &amp; rapid osmotic turgor snap.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Auxin (IAA):</span>{' '}
+                Stimulates H+-ATPase proton pumps → low wall pH activates expansins → breaks H-bonds between cellulose microfibrils → turgor elongation.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Gibberellin (GA):</span>{' '}
+                Embryo GA triggers DELLA repressor breakdown in barley aleurone cells, activating amylase transcription to hydrolyse endosperm starch.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-xs">
+          <h2 className="text-xl font-semibold text-slate-900">
+            04. Types of Neurones &amp; Structural Comparison (9700)
+          </h2>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-sm sm:text-base border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-600">
+                  <th className="py-3 pr-4 font-medium">Neurone Type</th>
+                  <th className="py-3 pr-4 font-medium">Cell Body Position</th>
+                  <th className="py-3 pr-4 font-medium">Dendron / Dendrites</th>
+                  <th className="py-3 font-medium">Axon &amp; Myelination</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Sensory Neurone</td>
+                  <td className="py-3.5 pr-4 text-slate-600">
+                    Dorsal root ganglion (outside CNS)
+                  </td>
+                  <td className="py-3.5 pr-4">
+                    1 long dendron from receptor to cell body
+                  </td>
+                  <td className="py-3.5">
+                    Shorter axon entering CNS · Myelinated (Schwann cells)
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Relay (Intermediate)</td>
+                  <td className="py-3.5 pr-4 text-slate-600">
+                    CNS grey matter (brain / spinal cord)
+                  </td>
+                  <td className="py-3.5 pr-4">
+                    Many short, highly branched dendrites
+                  </td>
+                  <td className="py-3.5">
+                    Short unmyelinated axon wholly within CNS
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Motor Neurone</td>
+                  <td className="py-3.5 pr-4 text-slate-600">
+                    CNS grey matter (brain / spinal cord)
+                  </td>
+                  <td className="py-3.5 pr-4">
+                    Many short dendrites around cell body
+                  </td>
+                  <td className="py-3.5">
+                    Long myelinated axon to muscle / gland effector
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-slate-200/90 bg-white p-6 space-y-2.5 shadow-xs">
+          <h3 className="text-lg font-semibold text-slate-900">
+            05. Chemoreceptors for Taste (Tongue Taste Buds · 9700)
+          </h3>
+          <p className="text-base leading-relaxed text-slate-700">
+            <span className="font-semibold text-slate-900">Salt (Na+) Transduction:</span>{' '}
+            Na+ ions dissolve in saliva and diffuse through the taste pore → enter chemoreceptor microvilli via apical Na+ channels → depolarise membrane (graded <span className="font-semibold">receptor potential</span>) → open basal voltage-gated Ca2+ channels → Ca2+ influx triggers neurotransmitter exocytosis → depolarises sensory neurone above threshold to fire <span className="font-semibold">action potentials</span> to the brain.
+          </p>
         </div>
       </div>
     );

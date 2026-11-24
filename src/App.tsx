@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { RespirationLab } from './components/respiration/RespirationLab';
 import { PhotosynthesisLab } from './components/photosynthesis/PhotosynthesisLab';
+import { ControlCoordinationLab } from './components/control/ControlCoordinationLab';
 import { PracticeQuiz } from './components/quiz/PracticeQuiz';
 import { SyllabusRoadmap } from './components/roadmap/SyllabusRoadmap';
 import { TopicQuickNotes } from './components/notes/TopicQuickNotes';
@@ -57,7 +58,11 @@ export default function App() {
   };
 
   const activeTopicQuestions = useMemo(() => {
-    if (activeTab === 'respiration' || activeTab === 'photosynthesis') {
+    if (
+      activeTab === 'respiration' ||
+      activeTab === 'photosynthesis' ||
+      activeTab === 'control'
+    ) {
       return QUIZ_QUESTIONS.filter((q) => q.topicId === activeTab);
     }
     return QUIZ_QUESTIONS;
@@ -121,6 +126,17 @@ export default function App() {
             </button>
             <button
               type="button"
+              onClick={() => setActiveTab('control')}
+              className={`whitespace-nowrap shrink-0 border-b-2 py-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${
+                activeTab === 'control'
+                  ? 'border-violet-700 text-violet-700 font-semibold'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              15. Control
+            </button>
+            <button
+              type="button"
               onClick={() => setActiveTab('roadmap')}
               className={`whitespace-nowrap shrink-0 border-b-2 py-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${
                 activeTab === 'roadmap'
@@ -151,7 +167,9 @@ export default function App() {
 
       {/* Main Workspace */}
       <main className="mx-auto w-full max-w-[1320px] flex-1 px-4 sm:px-8 py-6 sm:py-8 space-y-6">
-        {(activeTab === 'respiration' || activeTab === 'photosynthesis') && (
+        {(activeTab === 'respiration' ||
+          activeTab === 'photosynthesis' ||
+          activeTab === 'control') && (
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200/90 bg-white/95 px-4 py-3 shadow-xs">
             <div
               className="flex flex-wrap items-center gap-1 rounded-lg bg-slate-100 p-1"
@@ -244,6 +262,22 @@ export default function App() {
           </>
         )}
 
+        {activeTab === 'control' && (
+          <>
+            {topicMode === 'diagrams' && <ControlCoordinationLab />}
+            {topicMode === 'quiz' && (
+              <PracticeQuiz
+                title="Topic 15: Control and Coordination — 9700 Practice Quiz"
+                questions={activeTopicQuestions}
+                answeredMap={answeredMap}
+                onAnswerQuestion={handleAnswerQuestion}
+                onResetTopicQuiz={handleResetQuizIds}
+              />
+            )}
+            {topicMode === 'notes' && <TopicQuickNotes topicId="control" />}
+          </>
+        )}
+
         {activeTab === 'roadmap' && (
           <SyllabusRoadmap
             answeredMap={answeredMap}
@@ -255,14 +289,14 @@ export default function App() {
           <div className="space-y-4">
             <div className="border-b border-slate-300/70 pb-4">
               <p className="text-sm font-medium text-slate-600">
-                Topics 12 &amp; 13 Combined · Paper 1 &amp; Paper 4 Style
+                Topics 12, 13 &amp; 15 Combined · Paper 1 &amp; Paper 4 Style
               </p>
               <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-                Synoptic Bioenergetics Practice Quiz
+                Synoptic A2 Biology Practice Quiz
               </h1>
             </div>
             <PracticeQuiz
-              title="Respiration & Photosynthesis Mixed Challenge"
+              title="Respiration, Photosynthesis & Coordination Challenge"
               questions={QUIZ_QUESTIONS}
               answeredMap={answeredMap}
               onAnswerQuestion={handleAnswerQuestion}
@@ -274,7 +308,9 @@ export default function App() {
 
       <footer className="border-t border-slate-200/90 bg-white/90 backdrop-blur-md py-4">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-2 px-4 sm:px-8 text-sm text-slate-600">
-          <span>Cambridge International A Level Biology (9700) · Topics 12 &amp; 13</span>
+          <span>
+            Cambridge International A Level Biology (9700) · Topics 12, 13 &amp; 15
+          </span>
           <span>Progress saved locally in your browser</span>
         </div>
       </footer>

@@ -54,15 +54,15 @@ export const A2_SYLLABUS_MODULES: SyllabusModuleMeta[] = [
     id: 'control',
     code: '15',
     title: 'Control and Coordination',
-    shortLabel: '15. Coordination',
-    status: 'planned',
+    shortLabel: '15. Control',
+    status: 'active',
     summary:
-      'Nervous & endocrine communication, resting and action potentials, cholinergic synapses, striated muscle contraction, and auxin/gibberellin responses.',
+      'Nervous & endocrine communication, sensory/relay/motor neurones, taste chemoreceptors, resting and action potentials, cholinergic synapses, striated muscle sliding filament model, Venus flytrap closure, and auxin/gibberellin regulation.',
     subtopics: [
-      '15.1 Mammalian nervous system & action potentials',
-      '15.1 Synaptic transmission & neuromuscular junctions',
-      '15.1 Sliding filament model of muscle contraction',
-      '15.2 Plant growth regulators (auxin, gibberellin)',
+      '15.1 Neurone types & parts (sensory, relay, motor) + taste chemoreceptors',
+      '15.1 Resting/action potentials, refractory period & saltatory conduction',
+      '15.1 Cholinergic synapses & striated muscle sliding filament model',
+      '15.2 Venus flytrap electrical closure, auxin acid growth & gibberellin (DELLA)',
     ],
     accentColor: '#7C3AED',
   },
@@ -513,5 +513,254 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     markSchemeExplanation:
       'Fixing 6 CO2 into 1 hexose (2 × TP exported) requires 6 turns of the Calvin cycle. Reducing 12 GP to 12 TP consumes 12 ATP and 12 reduced NADP; regenerating 6 RuBP from the remaining 10 TP consumes a further 6 ATP, giving a total of 18 ATP and 12 reduced NADP.',
     keyTerms: ['6 turns per hexose', '18 ATP', '12 reduced NADP', '5/6 TP regenerates RuBP'],
+  },
+
+  // TOPIC 15: CONTROL AND COORDINATION
+  {
+    id: 'ctrl-1',
+    topicId: 'control',
+    syllabusRef: '15.1.1 Nervous vs Endocrine Coordination',
+    difficulty: 'Core Recall',
+    prompt:
+      'How do mammalian nervous coordination and endocrine (hormonal) coordination differ in signal transmission and target specificity?',
+    options: [
+      'Nervous signals travel as chemical messengers in blood plasma to all tissues; hormones travel along myelinated axons to one muscle fibre',
+      'Nervous coordination uses rapid electrical impulses along neurones to specific effectors (short-lived response); endocrine coordination transports hormones in blood plasma to target cells possessing complementary receptors (longer-lasting response)',
+      'Both systems rely exclusively on acetylcholine diffusing through tissue fluid',
+      'Hormonal coordination only acts on exocrine glands and produces faster responses than reflex arcs',
+    ],
+    correctIndex: 1,
+    hint: 'Compare the pathway (neurone axon vs blood plasma), speed, duration, and how target cells recognise a hormone.',
+    markSchemeExplanation:
+      'Nervous impulses travel rapidly as action potentials along neurones directly to specific effector cells, giving fast, localised, short-lived responses. Hormones are secreted by endocrine glands into blood plasma and only affect target cells carrying complementary receptor proteins (cell-surface or intracellular), producing slower, more widespread, longer-lasting effects.',
+    keyTerms: ['Action potentials', 'Blood plasma', 'Target cell receptors', 'Speed vs duration'],
+  },
+  {
+    id: 'ctrl-2',
+    topicId: 'control',
+    syllabusRef: '15.1.2 Sensory Receptors (Pacinian Corpuscle)',
+    difficulty: 'Application & Data',
+    prompt:
+      'When firm pressure deforms the lamellae around the sensory neurone ending inside a Pacinian corpuscle, how is a receptor potential generated?',
+    options: [
+      'Voltage-gated Ca2+ channels open, releasing acetylcholine into the tissue fluid around the neurone',
+      'Mechanical deformation stretches the neurone plasma membrane, opening stretch-mediated Na+ channels so Na+ ions diffuse inward and depolarise the membrane',
+      'Na+/K+ pumps reverse direction to pump 3 K+ ions into the neurone per ATP hydrolysed',
+      'Cl- ions rapidly diffuse out of the myelin sheath to hyperpolarise the axon',
+    ],
+    correctIndex: 1,
+    hint: 'Sensory receptors act as biological transducers: mechanical pressure opens a specific type of gated ion channel.',
+    markSchemeExplanation:
+      'Pressure deforms the concentric lamellae and stretches the sensory neurone ending plasma membrane. Stretch-mediated Na+ channels widen, allowing Na+ influx down an electrochemical gradient to produce a graded depolarisation (receptor/generator potential). If it reaches threshold (~-55 mV), action potentials fire.',
+    keyTerms: ['Transducer', 'Stretch-mediated Na+ channels', 'Receptor potential', 'Threshold'],
+  },
+  {
+    id: 'ctrl-3',
+    topicId: 'control',
+    syllabusRef: '15.1.3 Resting & Action Potentials',
+    difficulty: 'Core Recall',
+    prompt:
+      'During an action potential in a mammalian axon, what causes the membrane potential to return rapidly from +30 mV back down toward -70 mV (repolarisation)?',
+    options: [
+      'Voltage-gated Na+ channels close and voltage-gated K+ channels open, allowing rapid K+ efflux out of the axon',
+      'Voltage-gated Na+ channels remain open while K+ ions are actively pumped inward by the Na+/K+ pump',
+      'Negatively charged organic phosphate ions diffuse out through the phospholipid bilayer',
+      'Calcium ions flood out of the axon via facilitated diffusion',
+    ],
+    correctIndex: 0,
+    hint: 'Think about which cation is more concentrated INSIDE the resting axon and which voltage-gated channels open at +30 mV.',
+    markSchemeExplanation:
+      'At the peak (~+30 mV), voltage-gated Na+ channels inactivate/close, stopping Na+ influx. Simultaneously, voltage-gated K+ channels open, so K+ ions diffuse rapidly out of the axon down their electrochemical gradient, restoring a negative interior (repolarisation) and briefly overshooting to hyperpolarisation.',
+    keyTerms: ['Voltage-gated Na+ close', 'Voltage-gated K+ open', 'K+ efflux', 'Repolarisation'],
+  },
+  {
+    id: 'ctrl-4',
+    topicId: 'control',
+    syllabusRef: '15.1.4 Refractory Period & Saltatory Conduction',
+    difficulty: 'Application & Data',
+    prompt:
+      'Why does a myelinated axon conduct action potentials much faster than an unmyelinated axon of the same diameter, and how does the brain distinguish a strong stimulus from a weak stimulus?',
+    options: [
+      'Myelin speeds up diffusion across synapses; stronger stimuli produce taller action potentials (+80 mV instead of +30 mV)',
+      'Myelin acts as an electrical insulator so local circuits jump between nodes of Ranvier (saltatory conduction); stronger stimuli increase the FREQUENCY of action potentials, not their amplitude',
+      'Schwann cells actively pump action potentials forward; stronger stimuli reverse the refractory period',
+      'Action potentials travel continuously through the cytoplasm of Schwann cells without crossing membranes',
+    ],
+    correctIndex: 1,
+    hint: 'Remember the all-or-nothing principle: action potential amplitude is constant (+30 to +40 mV).',
+    markSchemeExplanation:
+      'Lipid-rich myelin from Schwann cells insulates the axon so ion exchange only occurs at uncovered nodes of Ranvier; local currents jump from node to node (saltatory conduction). Because action potentials obey the all-or-nothing rule (constant amplitude), stimulus intensity is encoded by impulse frequency—limited only by the refractory period.',
+    keyTerms: ['Saltatory conduction', 'Nodes of Ranvier', 'All-or-nothing', 'Impulse frequency'],
+  },
+  {
+    id: 'ctrl-5',
+    topicId: 'control',
+    syllabusRef: '15.1.5 Cholinergic Synapses',
+    difficulty: 'Application & Data',
+    prompt:
+      'An organophosphate insecticide irreversibly inhibits the enzyme acetylcholinesterase (AChE) inside cholinergic synaptic clefts. What is the immediate physiological consequence at the postsynaptic membrane?',
+    options: [
+      'Presynaptic vesicles cannot fuse with the membrane because Ca2+ channels remain blocked',
+      'Acetylcholine is not hydrolysed, remains bound to postsynaptic receptor-linked Na+ channels, and causes continuous Na+ influx and repeated postsynaptic firing (tetanic spasm)',
+      'Choline accumulates in the cleft and blocks Na+ entry into the postsynaptic neurone',
+      'Impulse transmission reverses direction from the postsynaptic to the presynaptic neurone',
+    ],
+    correctIndex: 1,
+    hint: 'Without AChE, what happens to ACh molecules already sitting on the postsynaptic receptor proteins?',
+    markSchemeExplanation:
+      'Normally, acetylcholinesterase rapidly hydrolyses ACh into choline and ethanoic acid (acetate) so Na+ channels close after one impulse. Inhibiting AChE leaves ACh bound to postsynaptic receptors, keeping Na+ channels open and triggering continuous depolarisation/muscle spasms.',
+    keyTerms: ['Acetylcholinesterase (AChE)', 'Choline + ethanoic acid', 'Continuous depolarisation', 'Postsynaptic Na+ channels'],
+  },
+  {
+    id: 'ctrl-6',
+    topicId: 'control',
+    syllabusRef: '15.1.6 Striated Muscle Sarcomere',
+    difficulty: 'Core Recall',
+    prompt:
+      'During the contraction of a striated muscle sarcomere, how do the lengths of the A-band, I-band, H-zone, and distance between Z-lines change?',
+    options: [
+      'A-band shortens, I-band stays constant, H-zone widens',
+      'A-band stays constant, while the I-band, H-zone, and distance between Z-lines all shorten',
+      'Both A-band and I-band shorten equally as myosin filaments shrink',
+      'H-zone widens because actin filaments are pushed outward away from the M-line',
+    ],
+    correctIndex: 1,
+    hint: 'Neither actin nor myosin filaments actually shorten; they slide past one another. Which band equals the full length of myosin?',
+    markSchemeExplanation:
+      'Because actin filaments slide inward over myosin toward the M-line without changing filament length, the A-band (full length of thick myosin filaments) stays constant. The region of non-overlap (I-band) and the myosin-only gap (H-zone) both narrow/shorten, pulling adjacent Z-lines closer together.',
+    keyTerms: ['A-band constant', 'I-band shortens', 'H-zone shortens', 'Z-lines closer'],
+  },
+  {
+    id: 'ctrl-7',
+    topicId: 'control',
+    syllabusRef: '15.1.6 Sliding Filament & ATP Role',
+    difficulty: 'Application & Data',
+    prompt:
+      'After death, ATP production stops and skeletal muscles enter rigor mortis (becoming stiff and locked in contraction). Which two ATP-dependent steps in the sliding filament mechanism explain why muscles cannot relax without ATP?',
+    options: [
+      'ATP is required to detach myosin heads from actin binding sites and to actively pump Ca2+ ions back into the sarcoplasmic reticulum',
+      'ATP is required to hydrolyse acetylcholine in the neuromuscular cleft and to break peptide bonds in tropomyosin',
+      'ATP is required only to form the initial cross-bridge power stroke; detachment is passive',
+      'ATP is required for Na+ influx through T-tubules into the myofibril',
+    ],
+    correctIndex: 0,
+    hint: 'Think about what happens to the myosin-actin cross-bridge at the end of a power stroke if no fresh ATP binds to the myosin head, and how Ca2+ returns to the SR.',
+    markSchemeExplanation:
+      'Fresh ATP must bind to the myosin head to break the actin-myosin cross-bridge (detachment) before myosin ATPase hydrolyses ATP to re-cock the head. Additionally, active transport pumps use ATP to return Ca2+ back into the sarcoplasmic reticulum so tropomyosin can re-cover actin binding sites. Without ATP, cross-bridges stay locked.',
+    keyTerms: ['Myosin head detachment', 'Sarcoplasmic reticulum Ca2+ pump', 'Cross-bridges locked', 'Myosin ATPase'],
+  },
+  {
+    id: 'ctrl-8',
+    topicId: 'control',
+    syllabusRef: '15.2.1 Venus Flytrap Closure',
+    difficulty: 'Application & Data',
+    prompt:
+      'Why does a Venus flytrap (Dionaea muscipula) require two deflections of its sensory trigger hairs within about 20–30 seconds before snapping shut?',
+    options: [
+      'The first deflection synthesises auxin in the petiole, which takes 25 seconds to diffuse to the trap lobes',
+      'One touch generates a sub-threshold depolarisation; a second deflection within ~20–30 s summates to reach threshold and fire an action potential across the lobe, preventing energy waste from false triggers like raindrops',
+      'Two deflections are needed to open stomata on the lower epidermis so O2 can enter',
+      'One touch triggers gibberellin release while the second touch closes xylem vessels',
+    ],
+    correctIndex: 1,
+    hint: 'Consider how Ca2+ / receptor potentials build up over consecutive stimuli and why snapping shut on a single raindrop would be disadvantageous.',
+    markSchemeExplanation:
+      'Deflecting a sensory hair opens Ca2+ channels and causes a local depolarisation. A single touch (e.g. a raindrop or falling leaf) decays without firing; a second touch within ~20–30 s reaches threshold, propagating an action potential across the lobe that drives H+ wall acidification and rapid osmotic water uptake into outer cells, snapping the trap shut.',
+    keyTerms: ['Sensory trigger hairs', 'Action potential', 'Two-touch threshold', 'Turgor change'],
+  },
+  {
+    id: 'ctrl-9',
+    topicId: 'control',
+    syllabusRef: '15.2.2 Auxin & Acid Growth Hypothesis',
+    difficulty: 'Core Recall',
+    prompt:
+      'According to the acid growth hypothesis, how does auxin (IAA) stimulate rapid cell elongation in plant shoots?',
+    options: [
+      'IAA stimulates proton pumps (H+-ATPase) to pump H+ into cell walls, lowering wall pH and activating expansins that break hydrogen bonds between cellulose microfibrils so turgor pressure stretches the cell',
+      'IAA directly enters the nucleus to digest cellulose cell walls using amylase',
+      'IAA closes aquaporins so water leaves the central vacuole, lengthening the cell wall',
+      'IAA inhibits mitosis in the apical meristem while triggering gibberellin synthesis in roots',
+    ],
+    correctIndex: 0,
+    hint: 'Focus on pH changes in the cell wall space, wall-loosening enzymes (expansins), and osmotic water uptake.',
+    markSchemeExplanation:
+      'IAA binds receptors and activates proton pumps in the cell surface membrane, pumping H+ ions into the cell wall. The acidic pH (~5) activates expansin proteins, which disrupt non-covalent hydrogen bonds linking cellulose microfibrils. As wall tension decreases, water enters osmotically and turgor pressure permanently elongates the cell.',
+    keyTerms: ['IAA', 'Proton pumps (H+-ATPase)', 'Expansins', 'Cellulose microfibrils'],
+  },
+  {
+    id: 'ctrl-10',
+    topicId: 'control',
+    syllabusRef: '15.2.2 Gibberellin & DELLA Proteins',
+    difficulty: 'Application & Data',
+    prompt:
+      'In germinating barley seeds, how does gibberellin (GA) trigger the breakdown of starch stored in the endosperm?',
+    options: [
+      'Gibberellin diffuses directly into starch grains and acts as an enzyme hydrolysing alpha-1,4 glycosidic bonds',
+      'The embryo synthesises gibberellin, which diffuses to the aleurone layer and causes breakdown of DELLA repressor proteins, allowing transcription factors to activate amylase gene transcription',
+      'The aleurone layer secretes gibberellin into the soil to attract water into the testa',
+      'Gibberellin stimulates ABA synthesis, which inhibits mitosis and converts maltose into cellulose',
+    ],
+    correctIndex: 1,
+    hint: 'Remember the role of the embryo, the aleurone layer, DELLA repressor proteins, and the hydrolytic enzyme amylase.',
+    markSchemeExplanation:
+      'After water imbibition, the embryo synthesises gibberellin, which diffuses to the surrounding aleurone layer. Inside aleurone cells, gibberellin binds its receptor and triggers destruction of DELLA repressor proteins, freeing transcription factors to transcribe mRNA for amylase. Secreted amylase hydrolyses endosperm starch into maltose for embryo respiration and growth.',
+    keyTerms: ['Aleurone layer', 'DELLA proteins', 'Amylase transcription', 'Endosperm starch'],
+  },
+  {
+    id: 'ctrl-11',
+    topicId: 'control',
+    syllabusRef: '15.1.1 Types & Structure of Neurones',
+    difficulty: 'Core Recall',
+    prompt:
+      'Which combination correctly describes the structure and location of a mammalian sensory neurone compared with a motor neurone?',
+    options: [
+      'Sensory neurone has its cell body inside CNS grey matter and many short dendrites; motor neurone has its cell body in a dorsal root ganglion',
+      'Sensory neurone has a cell body in a ganglion outside the CNS with a long dendron carrying impulses toward the cell body and a shorter axon entering the CNS; motor neurone has its cell body inside CNS grey matter with a long myelinated axon to an effector',
+      'Both sensory and motor neurones are unmyelinated and confined completely inside the spinal cord',
+      'Relay neurones carry impulses from effectors back to sensory receptors via long myelinated dendrons',
+    ],
+    correctIndex: 1,
+    hint: 'Think of the reflex arc anatomy: where is the sensory neurone soma located versus the motor neurone soma, and what is the long peripheral fibre of a sensory neurone called?',
+    markSchemeExplanation:
+      'A sensory neurone has a single long dendron carrying impulses from the receptor to a cell body positioned in a dorsal root ganglion just outside the CNS, plus a shorter axon entering the CNS. A motor neurone has its cell body (with many short dendrites) inside CNS grey matter and a long myelinated axon extending to the effector.',
+    keyTerms: ['Sensory dendron', 'Dorsal root ganglion', 'Motor cell body in CNS', 'Relay neurone'],
+  },
+  {
+    id: 'ctrl-12',
+    topicId: 'control',
+    syllabusRef: '15.1.2 Chemoreceptors for Taste (Tongue)',
+    difficulty: 'Application & Data',
+    prompt:
+      'In human tongue taste buds, what is the correct sequence by which dissolved sodium ions (Na+, salt taste) trigger nerve impulses to the brain?',
+    options: [
+      'Na+ ions bind haemoglobin inside taste papillae, directly opening voltage-gated K+ channels in the brain',
+      'Na+ ions diffuse through the taste pore into chemoreceptor microvilli via apical Na+ channels → depolarise the receptor cell (receptor potential) → open basal voltage-gated Ca2+ channels → neurotransmitter exocytosis → action potentials in sensory neurone',
+      'Na+ ions are actively pumped out of microvilli by the Na+/K+ pump to hyperpolarise the sensory neurone',
+      'Chemoreceptor cells secrete acetylcholinesterase into saliva to digest NaCl before swallowing',
+    ],
+    correctIndex: 1,
+    hint: 'Trace the signal from saliva → microvilli Na+ channels → receptor potential → Ca2+ at the basal synapse → sensory neurone.',
+    markSchemeExplanation:
+      'Dissolved Na+ enters chemoreceptor microvilli down an electrochemical gradient through apical Na+ channels, causing depolarisation (a graded receptor potential). If threshold is reached, voltage-gated Ca2+ channels open at the basal membrane, triggering neurotransmitter release by exocytosis onto the sensory neurone, which fires action potentials if depolarised to threshold.',
+    keyTerms: ['Chemoreceptor microvilli', 'Apical Na+ channels', 'Receptor potential', 'Ca2+ exocytosis'],
+  },
+  {
+    id: 'ctrl-13',
+    topicId: 'control',
+    syllabusRef: '15.1.2 Transduction & Stimulus Strength',
+    difficulty: 'Application & Data',
+    prompt:
+      'A volunteer tastes two NaCl solutions: Solution X (0.05 mol dm⁻³) and Solution Y (0.50 mol dm⁻³). How does the chemoreceptor-sensory neurone system signal the stronger salt taste of Solution Y?',
+    options: [
+      'Solution Y produces a larger graded receptor potential in the chemoreceptor cell, releasing more neurotransmitter and triggering a higher FREQUENCY of action potentials in the sensory neurone',
+      'Solution Y makes each action potential in the sensory neurone reach +120 mV instead of +35 mV',
+      'Solution Y switches conduction in the sensory neurone from saltatory to continuous',
+      'Solution Y causes the sensory neurone to conduct impulses backward toward the taste pore',
+    ],
+    correctIndex: 0,
+    hint: 'Distinguish between the graded receptor potential in the receptor cell and the all-or-nothing action potentials in the sensory neurone.',
+    markSchemeExplanation:
+      'Higher [Na+] causes greater Na+ influx and a larger graded receptor potential in the chemoreceptor cell, opening more voltage-gated Ca2+ channels and releasing more neurotransmitter. Because sensory neurone action potentials obey the all-or-nothing law (fixed amplitude), stronger taste is encoded by a higher frequency of action potentials.',
+    keyTerms: ['Graded receptor potential', 'All-or-nothing', 'Action potential frequency', 'Transducer'],
   },
 ];

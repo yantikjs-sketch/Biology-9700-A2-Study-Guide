@@ -37,8 +37,8 @@ export const SyllabusRoadmap: React.FC<SyllabusRoadmapProps> = ({
         </h1>
         <p className="mt-2 max-w-2xl text-base leading-relaxed text-slate-700">
           Each A2 topic lives in its own dedicated tab with interactive diagrams and
-          exam-style quizzes. Topics 12 and 13 are live below; Topics 14–19 are structured
-          as ready-to-activate syllabus slots as you expand your revision deck.
+          exam-style quizzes. Topics 12, 13, and 15 are live below; Topics 14 and 16–19
+          are structured as ready-to-activate syllabus slots as you expand your revision deck.
         </p>
       </div>
 
@@ -49,7 +49,7 @@ export const SyllabusRoadmap: React.FC<SyllabusRoadmapProps> = ({
           Active Interactive Revision Modules
         </h2>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {A2_SYLLABUS_MODULES.filter((m) => m.status === 'active').map(
             (mod) => {
               const mastery = getTopicMastery(mod.id);
@@ -132,11 +132,11 @@ export const SyllabusRoadmap: React.FC<SyllabusRoadmapProps> = ({
         </div>
       </section>
 
-      {/* Upcoming Syllabus Slots (Topics 14–19) */}
+      {/* Upcoming Syllabus Slots (Topics 14 & 16–19) */}
       <section className="space-y-3 pt-2">
         <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2">
           <Layers className="h-4 w-4 text-slate-700" />
-          Planned A2 9700 Topic Slots (Topics 14–19)
+          Planned A2 9700 Topic Slots (Topics 14 &amp; 16–19)
         </h2>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
