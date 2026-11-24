@@ -39,14 +39,14 @@ export const A2_SYLLABUS_MODULES: SyllabusModuleMeta[] = [
     code: '14',
     title: 'Homeostasis',
     shortLabel: '14. Homeostasis',
-    status: 'planned',
+    status: 'active',
     summary:
-      'Osmoregulation in mammals, nephron ultrafiltration & selective reabsorption, ADH feedback, blood glucose regulation, and stomatal guard cells.',
+      'Negative feedback, liver deamination & urea formation, nephron ultrafiltration & PCT reabsorption, ADH osmoregulation, blood glucose & cAMP signalling, biosensors, and stomatal ABA control.',
     subtopics: [
-      '14.1 Homeostasis in mammals & negative feedback',
-      '14.1 Kidney structure, ultrafiltration & loop of Henle',
-      '14.1 Blood glucose control (insulin, glucagon, second messengers)',
-      '14.2 Homeostasis in plants & abscisic acid (ABA)',
+      '14.1 Negative feedback, deamination & urea formation in liver',
+      '14.1 Kidney ultrafiltration, PCT reabsorption, loop of Henle & ADH',
+      '14.1 Blood glucose control (insulin, glucagon, cAMP) & biosensors',
+      '14.2 Plant homeostasis: stomatal guard cells & abscisic acid (ABA)',
     ],
     accentColor: '#0F766E',
   },
@@ -762,5 +762,197 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     markSchemeExplanation:
       'Higher [Na+] causes greater Na+ influx and a larger graded receptor potential in the chemoreceptor cell, opening more voltage-gated Ca2+ channels and releasing more neurotransmitter. Because sensory neurone action potentials obey the all-or-nothing law (fixed amplitude), stronger taste is encoded by a higher frequency of action potentials.',
     keyTerms: ['Graded receptor potential', 'All-or-nothing', 'Action potential frequency', 'Transducer'],
+  },
+
+  // TOPIC 14: HOMEOSTASIS
+  {
+    id: 'homeo-1',
+    topicId: 'homeostasis',
+    syllabusRef: '14.1.1 Deamination & Urea Formation',
+    difficulty: 'Core Recall',
+    prompt:
+      'Why must excess amino acids undergo deamination in mammalian liver hepatocytes before their nitrogen can be excreted by the kidneys?',
+    options: [
+      'Excess amino acids are stored directly inside Bowman’s capsule until urine forms',
+      'Deamination removes the amino (-NH2) group as toxic ammonia, which is converted with CO2 via the urea cycle into soluble, less toxic urea CO(NH2)2, while the remaining keto acid is respired',
+      'Deamination converts urea into glucose using amylase inside the proximal convoluted tubule',
+      'Amino acids cannot pass through the glomerular basement membrane unless converted into haemoglobin',
+    ],
+    correctIndex: 1,
+    hint: 'Ammonia (NH3) is highly soluble and toxic, so mammals convert it to a safer nitrogenous compound in the liver.',
+    markSchemeExplanation:
+      'Mammals cannot store excess amino acids. Hepatocytes remove the -NH2 group (deamination) forming ammonia, which rapidly combines with CO2 in the ornithine/urea cycle to form less toxic, soluble urea for safe blood transport to the kidneys. The remaining carbon skeleton (keto acid) enters respiration or gluconeogenesis.',
+    keyTerms: ['Deamination', 'Hepatocytes', 'Urea CO(NH2)2', 'Keto acid'],
+  },
+  {
+    id: 'homeo-2',
+    topicId: 'homeostasis',
+    syllabusRef: '14.1.2 Glomerular Ultrafiltration',
+    difficulty: 'Core Recall',
+    prompt:
+      'Which combination explains how high hydrostatic pressure is generated in the glomerulus and which structure acts as the main molecular sieve preventing plasma proteins entering Bowman’s capsule?',
+    options: [
+      'Efferent arteriole is wider than afferent arteriole; podocyte cell nuclei block proteins',
+      'Afferent arteriole is wider than efferent arteriole, raising glomerular hydrostatic pressure; the basement membrane acts as the main molecular filter blocking large plasma proteins (> ~69 kDa)',
+      'Active transport pumps glucose and proteins into the capsule against pressure',
+      'Loop of Henle contractions push plasma proteins backward into the renal vein',
+    ],
+    correctIndex: 1,
+    hint: 'Compare the lumen diameter of the arteriole entering the glomerulus vs leaving it, and recall the 3 filtration layers.',
+    markSchemeExplanation:
+      'Because the afferent arteriole has a wider diameter than the efferent arteriole, blood enters faster than it leaves, building high hydrostatic pressure. Fluid and small solutes pass through capillary fenestrations, across the acellular collagen/glycoprotein basement membrane (which blocks large plasma proteins), and through filtration slits between podocyte pedicels.',
+    keyTerms: ['Afferent vs efferent arteriole', 'Hydrostatic pressure', 'Basement membrane', 'Podocytes'],
+  },
+  {
+    id: 'homeo-3',
+    topicId: 'homeostasis',
+    syllabusRef: '14.1.2 Selective Reabsorption in PCT',
+    difficulty: 'Application & Data',
+    prompt:
+      'How are all glucose molecules reabsorbed back into blood along the proximal convoluted tubule (PCT)?',
+    options: [
+      'By simple diffusion straight through the phospholipid bilayer of PCT cells',
+      'Na+/K+ pumps actively pump Na+ out of the basal PCT membrane into blood, maintaining a steep Na+ gradient that drives Na+-glucose co-transport across the luminal microvilli (secondary active transport)',
+      'By endocytosis of glucose droplets into the loop of Henle',
+      'Glucose is converted into glycogen inside the PCT lumen before diffusing into the glomerulus',
+    ],
+    correctIndex: 1,
+    hint: 'Think about why PCT epithelial cells contain numerous mitochondria and luminal microvilli.',
+    markSchemeExplanation:
+      'ATP from abundant mitochondria drives Na+/K+ pumps on the basal membrane, lowering intracellular [Na+]. Na+ then diffuses down its gradient into the PCT cell through luminal co-transporter proteins, bringing glucose with it against glucose’s concentration gradient; glucose exits the basal membrane into capillaries via facilitated diffusion.',
+    keyTerms: ['Na+/K+ pump', 'Co-transport', 'Microvilli', 'Mitochondria'],
+  },
+  {
+    id: 'homeo-4',
+    topicId: 'homeostasis',
+    syllabusRef: '14.1.2 Loop of Henle',
+    difficulty: 'Application & Data',
+    prompt:
+      'What is the primary physiological role of the ascending limb of the loop of Henle in producing concentrated urine?',
+    options: [
+      'It actively pumps Na+ and Cl- ions out into the surrounding medulla tissue fluid while remaining impermeable to water, lowering the medulla water potential (Ψ)',
+      'It secretes ADH directly into Bowman’s capsule',
+      'It is highly permeable to water, allowing water to flood into the tubule from the cortex',
+      'It reabsorbs 100% of urea by active transport into the descending limb',
+    ],
+    correctIndex: 0,
+    hint: 'Consider how the medulla tissue fluid becomes hypertonic (very negative water potential) so water can later leave the collecting duct.',
+    markSchemeExplanation:
+      'Cells of the thick ascending limb actively pump Na+ and Cl- ions out into the medullary interstitial fluid and are impermeable to water. This creates a steep water potential gradient (very negative Ψ) deep in the medulla, drawing water out of the descending limb and, when ADH is present, out of the collecting duct.',
+    keyTerms: ['Ascending limb', 'Active Na+/Cl- transport', 'Impermeable to water', 'Medullary Ψ gradient'],
+  },
+  {
+    id: 'homeo-5',
+    topicId: 'homeostasis',
+    syllabusRef: '14.1.2 ADH & Osmoregulation',
+    difficulty: 'Application & Data',
+    prompt:
+      'Following heavy sweating without drinking water, blood water potential (Ψ) falls. What sequence of events restores blood water potential by negative feedback?',
+    options: [
+      'Osmoreceptors in the hypothalamus swell → anterior pituitary stops releasing ADH → aquaporins are removed from the collecting duct',
+      'Osmoreceptors in the hypothalamus shrink → posterior pituitary secretes more ADH → collecting duct cells insert aquaporin vesicles into their luminal membrane → more water is reabsorbed by osmosis into the medulla',
+      'Pancreas α-cells secrete ADH → loop of Henle pumps glucose into urine',
+      'Podocytes close filtration slits completely so no glomerular filtrate is produced',
+    ],
+    correctIndex: 1,
+    hint: 'Trace the signal from hypothalamus osmoreceptors → posterior pituitary → collecting duct aquaporin channels.',
+    markSchemeExplanation:
+      'Low blood Ψ causes water to leave hypothalamic osmoreceptor neurones by osmosis, so they shrink and trigger impulses to the posterior pituitary to release ADH. ADH binds collecting duct cell-surface receptors (via cAMP), causing aquaporin vesicles to fuse with the apical membrane, increasing water reabsorption by osmosis into the hypertonic medulla.',
+    keyTerms: ['Hypothalamus osmoreceptors', 'Posterior pituitary', 'ADH', 'Aquaporins'],
+  },
+  {
+    id: 'homeo-6',
+    topicId: 'homeostasis',
+    syllabusRef: '14.1.3 Insulin & Blood Glucose Control',
+    difficulty: 'Core Recall',
+    prompt:
+      'After a carbohydrate-rich meal, how does insulin secreted by pancreatic β-cells lower blood glucose concentration?',
+    options: [
+      'Insulin binds α-cells to stimulate glycogenolysis in the pancreas',
+      'Insulin binds receptors on liver and muscle cells, increasing GLUT4 glucose transporters in muscle membranes, increasing glucose respiration, and stimulating glycogenesis (glucose → glycogen)',
+      'Insulin inhibits hexokinase in all cells so glucose stays in blood plasma',
+      'Insulin stimulates active excretion of glucose into the collecting duct',
+    ],
+    correctIndex: 1,
+    hint: 'Remember both membrane transport (GLUT4) and intracellular conversion (glycogenesis).',
+    markSchemeExplanation:
+      'High blood glucose stimulates β-cells in the islets of Langerhans to secrete insulin. Binding to liver, muscle, and adipose receptors causes GLUT4 transporter vesicles to fuse with muscle/adipose membranes (increasing uptake) and activates glycogen synthase to convert glucose to insoluble glycogen (glycogenesis).',
+    keyTerms: ['β-cells', 'Insulin', 'GLUT4', 'Glycogenesis'],
+  },
+  {
+    id: 'homeo-7',
+    topicId: 'homeostasis',
+    syllabusRef: '14.1.3 Glucagon & cAMP Signalling Cascade',
+    difficulty: 'Application & Data',
+    prompt:
+      'Why does a tiny concentration of glucagon (or adrenaline) binding to hepatocyte receptors trigger a massive, rapid release of glucose from liver glycogen?',
+    options: [
+      'Glucagon crosses the nuclear envelope and directly hydrolyses glycogen molecules itself',
+      'Receptor binding activates a G-protein and adenylyl cyclase to produce cyclic AMP (cAMP), initiating a multi-step enzyme kinase cascade where each step amplifies the number of activated molecules (glycogen phosphorylase)',
+      'cAMP converts urea directly into glucose inside mitochondria',
+      'Glucagon opens voltage-gated Ca2+ channels on the pancreas to pump glycogen into blood',
+    ],
+    correctIndex: 1,
+    hint: 'Think about second messengers (cAMP) and signal amplification through an enzyme cascade.',
+    markSchemeExplanation:
+      'Glucagon binds its cell-surface receptor, activating a G-protein which activates adenylyl cyclase to convert ATP into many cAMP molecules. Each cAMP activates protein kinase A, triggering an enzyme cascade that activates thousands of glycogen phosphorylase enzymes—magnifying the signal to rapidly hydrolyse glycogen into glucose.',
+    keyTerms: ['Adenylyl cyclase', 'Cyclic AMP (cAMP)', 'Enzyme cascade amplification', 'Glycogenolysis'],
+  },
+  {
+    id: 'homeo-8',
+    topicId: 'homeostasis',
+    syllabusRef: '14.1.3 Glucose Biosensors & Dipsticks',
+    difficulty: 'Core Recall',
+    prompt:
+      'In both blood glucose biosensors and urine glucose test strips (dipsticks), why is the immobilised enzyme glucose oxidase used instead of Benedict’s reagent?',
+    options: [
+      'Glucose oxidase reacts specifically with glucose (not other reducing sugars like lactose or fructose) and works rapidly at room temperature to yield an electrical signal or peroxidase colour change',
+      'Glucose oxidase requires boiling in a water bath for 5 minutes to form a brick-red precipitate',
+      'Glucose oxidase measures insulin concentration directly in urine',
+      'Benedict’s reagent only detects sucrose and starch in blood plasma',
+    ],
+    correctIndex: 0,
+    hint: 'Consider enzyme specificity toward β-D-glucose vs non-specific reducing-sugar reactions.',
+    markSchemeExplanation:
+      'Glucose oxidase has an active site complementary only to glucose, oxidising it to gluconic acid + H2O2. In a biosensor, current proportional to [glucose] gives a precise quantitative readout; in a dipstick, peroxidase + H2O2 oxidises a chromogen dye semi-quantitatively.',
+    keyTerms: ['Glucose oxidase', 'Enzyme specificity', 'Biosensor current', 'Peroxidase'],
+  },
+  {
+    id: 'homeo-9',
+    topicId: 'homeostasis',
+    syllabusRef: '14.2.1 Stomatal Opening in Light',
+    difficulty: 'Core Recall',
+    prompt:
+      'Which sequence accurately explains how stomatal guard cells open in daylight?',
+    options: [
+      'Light inhibits proton pumps → K+ diffuses out → water potential rises → guard cells become flaccid',
+      'Light activates H+-ATPase proton pumps pumping H+ out → K+ channels open and K+ ions enter guard cells → water potential (Ψ) drops → water enters by osmosis, making guard cells turgid so thickened inner walls bow apart',
+      'Chloroplasts in guard cells pump starch directly into surrounding epidermal cells',
+      'Abscisic acid accumulates in guard cells during daylight, triggering turgor swelling',
+    ],
+    correctIndex: 1,
+    hint: 'Trace H+ pumping → K+ influx → water potential change → osmosis → unequal cell wall thickness.',
+    markSchemeExplanation:
+      'ATP-driven H+ pumping hyperpolarises the guard cell membrane, opening K+ channels so K+ enters (balanced by Cl-/malate). Lowering Ψ inside guard cells draws water in by osmosis. Because the inner wall next to the pore is thicker and microfibrils run radially, turgid guard cells curve outward to open the stoma.',
+    keyTerms: ['H+-ATPase', 'K+ influx', 'Lower water potential (Ψ)', 'Uneven inner cell wall'],
+  },
+  {
+    id: 'homeo-10',
+    topicId: 'homeostasis',
+    syllabusRef: '14.2.2 Stomatal Closure by Abscisic Acid (ABA)',
+    difficulty: 'Application & Data',
+    prompt:
+      'During severe drought, how does abscisic acid (ABA) cause rapid stomatal closure to conserve plant water?',
+    options: [
+      'ABA stimulates H+ pumping into the epidermal cells to make guard cells turgid',
+      'ABA binds guard cell receptors, inhibits H+ pumps and triggers Ca2+ influx, opening K+ efflux channels so K+ leaves; guard cell Ψ rises, water exits by osmosis, and guard cells become flaccid',
+      'ABA digests cellulose microfibrils in the guard cell wall using expansins',
+      'ABA closes xylem vessels in the stem by converting glucose to cellulose',
+    ],
+    correctIndex: 1,
+    hint: 'Think of ABA acting as a stress hormone: Ca2+ acts as a second messenger causing K+ loss and osmotic water exit.',
+    markSchemeExplanation:
+      'Water stress stimulates ABA synthesis. ABA binds receptors on guard cell plasma membranes, inhibiting proton pumps and raising cytosolic [Ca2+]. This second messenger opens K+ (and Cl-) efflux channels; K+ exits, raising guard cell water potential (Ψ), so water moves out by osmosis and flaccid guard cells close the pore.',
+    keyTerms: ['Abscisic acid (ABA)', 'Ca2+ second messenger', 'K+ efflux', 'Flaccid guard cells'],
   },
 ];

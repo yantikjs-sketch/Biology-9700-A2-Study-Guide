@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { RespirationLab } from './components/respiration/RespirationLab';
 import { PhotosynthesisLab } from './components/photosynthesis/PhotosynthesisLab';
+import { HomeostasisLab } from './components/homeostasis/HomeostasisLab';
 import { ControlCoordinationLab } from './components/control/ControlCoordinationLab';
 import { PracticeQuiz } from './components/quiz/PracticeQuiz';
 import { SyllabusRoadmap } from './components/roadmap/SyllabusRoadmap';
@@ -61,6 +62,7 @@ export default function App() {
     if (
       activeTab === 'respiration' ||
       activeTab === 'photosynthesis' ||
+      activeTab === 'homeostasis' ||
       activeTab === 'control'
     ) {
       return QUIZ_QUESTIONS.filter((q) => q.topicId === activeTab);
@@ -126,6 +128,17 @@ export default function App() {
             </button>
             <button
               type="button"
+              onClick={() => setActiveTab('homeostasis')}
+              className={`whitespace-nowrap shrink-0 border-b-2 py-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${
+                activeTab === 'homeostasis'
+                  ? 'border-teal-700 text-teal-700 font-semibold'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              14. Homeostasis
+            </button>
+            <button
+              type="button"
               onClick={() => setActiveTab('control')}
               className={`whitespace-nowrap shrink-0 border-b-2 py-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${
                 activeTab === 'control'
@@ -169,6 +182,7 @@ export default function App() {
       <main className="mx-auto w-full max-w-[1320px] flex-1 px-4 sm:px-8 py-6 sm:py-8 space-y-6">
         {(activeTab === 'respiration' ||
           activeTab === 'photosynthesis' ||
+          activeTab === 'homeostasis' ||
           activeTab === 'control') && (
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200/90 bg-white/95 px-4 py-3 shadow-xs">
             <div
@@ -228,88 +242,106 @@ export default function App() {
         )}
 
         {/* Active Content Render */}
-        {activeTab === 'respiration' && (
-          <>
-            {topicMode === 'diagrams' && <RespirationLab />}
-            {topicMode === 'quiz' && (
-              <PracticeQuiz
-                title="Topic 12: Energy and Respiration — 9700 Practice Quiz"
-                questions={activeTopicQuestions}
-                answeredMap={answeredMap}
-                onAnswerQuestion={handleAnswerQuestion}
-                onResetTopicQuiz={handleResetQuizIds}
-              />
-            )}
-            {topicMode === 'notes' && <TopicQuickNotes topicId="respiration" />}
-          </>
-        )}
+        <div key={`${activeTab}-${topicMode}`} className="animate-fade-slide-in">
+          {activeTab === 'respiration' && (
+            <>
+              {topicMode === 'diagrams' && <RespirationLab />}
+              {topicMode === 'quiz' && (
+                <PracticeQuiz
+                  title="Topic 12: Energy and Respiration — 9700 Practice Quiz"
+                  questions={activeTopicQuestions}
+                  answeredMap={answeredMap}
+                  onAnswerQuestion={handleAnswerQuestion}
+                  onResetTopicQuiz={handleResetQuizIds}
+                />
+              )}
+              {topicMode === 'notes' && <TopicQuickNotes topicId="respiration" />}
+            </>
+          )}
 
-        {activeTab === 'photosynthesis' && (
-          <>
-            {topicMode === 'diagrams' && <PhotosynthesisLab />}
-            {topicMode === 'quiz' && (
-              <PracticeQuiz
-                title="Topic 13: Photosynthesis — 9700 Practice Quiz"
-                questions={activeTopicQuestions}
-                answeredMap={answeredMap}
-                onAnswerQuestion={handleAnswerQuestion}
-                onResetTopicQuiz={handleResetQuizIds}
-              />
-            )}
-            {topicMode === 'notes' && (
-              <TopicQuickNotes topicId="photosynthesis" />
-            )}
-          </>
-        )}
+          {activeTab === 'photosynthesis' && (
+            <>
+              {topicMode === 'diagrams' && <PhotosynthesisLab />}
+              {topicMode === 'quiz' && (
+                <PracticeQuiz
+                  title="Topic 13: Photosynthesis — 9700 Practice Quiz"
+                  questions={activeTopicQuestions}
+                  answeredMap={answeredMap}
+                  onAnswerQuestion={handleAnswerQuestion}
+                  onResetTopicQuiz={handleResetQuizIds}
+                />
+              )}
+              {topicMode === 'notes' && (
+                <TopicQuickNotes topicId="photosynthesis" />
+              )}
+            </>
+          )}
 
-        {activeTab === 'control' && (
-          <>
-            {topicMode === 'diagrams' && <ControlCoordinationLab />}
-            {topicMode === 'quiz' && (
-              <PracticeQuiz
-                title="Topic 15: Control and Coordination — 9700 Practice Quiz"
-                questions={activeTopicQuestions}
-                answeredMap={answeredMap}
-                onAnswerQuestion={handleAnswerQuestion}
-                onResetTopicQuiz={handleResetQuizIds}
-              />
-            )}
-            {topicMode === 'notes' && <TopicQuickNotes topicId="control" />}
-          </>
-        )}
+          {activeTab === 'homeostasis' && (
+            <>
+              {topicMode === 'diagrams' && <HomeostasisLab />}
+              {topicMode === 'quiz' && (
+                <PracticeQuiz
+                  title="Topic 14: Homeostasis — 9700 Practice Quiz"
+                  questions={activeTopicQuestions}
+                  answeredMap={answeredMap}
+                  onAnswerQuestion={handleAnswerQuestion}
+                  onResetTopicQuiz={handleResetQuizIds}
+                />
+              )}
+              {topicMode === 'notes' && <TopicQuickNotes topicId="homeostasis" />}
+            </>
+          )}
 
-        {activeTab === 'roadmap' && (
-          <SyllabusRoadmap
-            answeredMap={answeredMap}
-            onSelectTopic={handleSelectTopicFromRoadmap}
-          />
-        )}
+          {activeTab === 'control' && (
+            <>
+              {topicMode === 'diagrams' && <ControlCoordinationLab />}
+              {topicMode === 'quiz' && (
+                <PracticeQuiz
+                  title="Topic 15: Control and Coordination — 9700 Practice Quiz"
+                  questions={activeTopicQuestions}
+                  answeredMap={answeredMap}
+                  onAnswerQuestion={handleAnswerQuestion}
+                  onResetTopicQuiz={handleResetQuizIds}
+                />
+              )}
+              {topicMode === 'notes' && <TopicQuickNotes topicId="control" />}
+            </>
+          )}
 
-        {activeTab === 'mixed-quiz' && (
-          <div className="space-y-4">
-            <div className="border-b border-slate-300/70 pb-4">
-              <p className="text-sm font-medium text-slate-600">
-                Topics 12, 13 &amp; 15 Combined · Paper 1 &amp; Paper 4 Style
-              </p>
-              <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-                Synoptic A2 Biology Practice Quiz
-              </h1>
-            </div>
-            <PracticeQuiz
-              title="Respiration, Photosynthesis & Coordination Challenge"
-              questions={QUIZ_QUESTIONS}
+          {activeTab === 'roadmap' && (
+            <SyllabusRoadmap
               answeredMap={answeredMap}
-              onAnswerQuestion={handleAnswerQuestion}
-              onResetTopicQuiz={handleResetQuizIds}
+              onSelectTopic={handleSelectTopicFromRoadmap}
             />
-          </div>
-        )}
+          )}
+
+          {activeTab === 'mixed-quiz' && (
+            <div className="space-y-4">
+              <div className="border-b border-slate-300/70 pb-4">
+                <p className="text-sm font-medium text-slate-600">
+                  Topics 12, 13, 14 &amp; 15 Combined · Paper 1 &amp; Paper 4 Style
+                </p>
+                <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+                  Synoptic A2 Biology Practice Quiz
+                </h1>
+              </div>
+              <PracticeQuiz
+                title="Respiration, Photosynthesis, Homeostasis & Coordination Challenge"
+                questions={QUIZ_QUESTIONS}
+                answeredMap={answeredMap}
+                onAnswerQuestion={handleAnswerQuestion}
+                onResetTopicQuiz={handleResetQuizIds}
+              />
+            </div>
+          )}
+        </div>
       </main>
 
       <footer className="border-t border-slate-200/90 bg-white/90 backdrop-blur-md py-4">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-2 px-4 sm:px-8 text-sm text-slate-600">
           <span>
-            Cambridge International A Level Biology (9700) · Topics 12, 13 &amp; 15
+            Cambridge International A Level Biology (9700) · Topics 12–15
           </span>
           <span>Progress saved locally in your browser</span>
         </div>

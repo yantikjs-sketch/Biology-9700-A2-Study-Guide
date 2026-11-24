@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Play,
   Pause,
@@ -211,16 +211,30 @@ export const RespirationLab: React.FC = () => {
   // Krebs detailed view state
   const [selectedKrebsStep, setSelectedKrebsStep] = useState<KrebsStepId>('step1');
   const [krebsMultiplier, setKrebsMultiplier] = useState<1 | 2>(2);
+  const [isPlayingKrebs, setIsPlayingKrebs] = useState<boolean>(true);
 
   // Respirometer state
   const [substrateId, setSubstrateId] = useState<string>('carb');
   const [kohPresent, setKohPresent] = useState<boolean>(true);
   const [tempC, setTempC] = useState<number>(25);
+  const [isRespiroPlaying, setIsRespiroPlaying] = useState<boolean>(true);
 
   // Capillary RQ Calculator state (Paper 4 / 5)
   const [capillaryRadiusMm, setCapillaryRadiusMm] = useState<number>(0.5);
   const [distanceWithKohMm, setDistanceWithKohMm] = useState<number>(24);
   const [distanceNoKohMm, setDistanceNoKohMm] = useState<number>(0);
+
+  useEffect(() => {
+    if (!isPlayingKrebs || subView !== 'krebs') return;
+    const order: KrebsStepId[] = ['step1', 'step2', 'step3', 'step4'];
+    const timer = window.setInterval(() => {
+      setSelectedKrebsStep((prev) => {
+        const idx = order.indexOf(prev);
+        return order[(idx + 1) % order.length];
+      });
+    }, 1800);
+    return () => window.clearInterval(timer);
+  }, [isPlayingKrebs, subView]);
 
   const activeStage = STAGE_DETAILS[selectedStage];
   const activeKrebs = KREBS_STEPS[selectedKrebsStep];
@@ -687,6 +701,11 @@ export const RespirationLab: React.FC = () => {
                     }
                     markerEnd="url(#arrow-amber)"
                   />
+                  {isPlaying && isAnaerobicActive && (
+                    <circle r="4.5" fill="#D97706" className="bio-particle-motion">
+                      <animateMotion dur="1.2s" repeatCount="indefinite" path="M 115 230 L 115 268" />
+                    </circle>
+                  )}
 
                   <path
                     d="M 212 195 L 296 195"
@@ -698,6 +717,16 @@ export const RespirationLab: React.FC = () => {
                     }
                     markerEnd="url(#arrow-blue)"
                   />
+                  {isPlaying && !isAnaerobicActive && !isCyanideBlocked && (
+                    <g className="bio-particle-motion">
+                      <circle r="4.5" fill="#1D4ED8">
+                        <animateMotion dur="1.4s" repeatCount="indefinite" path="M 212 195 L 296 195" />
+                      </circle>
+                      <circle r="3.5" fill="#60A5FA">
+                        <animateMotion dur="1.4s" begin="0.7s" repeatCount="indefinite" path="M 212 195 L 296 195" />
+                      </circle>
+                    </g>
+                  )}
 
                   {/* Stage 2: Link Reaction */}
                   <g
@@ -829,6 +858,16 @@ export const RespirationLab: React.FC = () => {
                     className={isPlaying && isEtcActive ? 'animate-flow-dash' : ''}
                     markerEnd="url(#arrow-emerald)"
                   />
+                  {isPlaying && isEtcActive && (
+                    <g className="bio-particle-motion">
+                      <circle r="4" fill="#059669">
+                        <animateMotion dur="1.8s" repeatCount="indefinite" path="M 468 330 C 500 330, 495 200, 526 200" />
+                      </circle>
+                      <circle r="4" fill="#34D399">
+                        <animateMotion dur="1.8s" begin="0.9s" repeatCount="indefinite" path="M 468 330 C 500 330, 495 200, 526 200" />
+                      </circle>
+                    </g>
+                  )}
                   <text
                     x="472"
                     y="256"
@@ -919,6 +958,26 @@ export const RespirationLab: React.FC = () => {
                       strokeWidth="2.5"
                       className={isPlaying && isEtcActive ? 'animate-flow-dash' : ''}
                     />
+                    {isPlaying && isEtcActive && (
+                      <g className="bio-particle-motion">
+                        <circle r="4" fill="#FACC15" stroke="#854D0E" strokeWidth="1">
+                          <animateMotion dur="1.5s" repeatCount="indefinite" path="M 564 186 L 664 186" />
+                        </circle>
+                        <circle r="4" fill="#FACC15" stroke="#854D0E" strokeWidth="1">
+                          <animateMotion dur="1.5s" begin="0.75s" repeatCount="indefinite" path="M 564 186 L 664 186" />
+                        </circle>
+                      </g>
+                    )}
+                    {isPlaying && isCyanideBlocked && (
+                      <g className="bio-particle-motion">
+                        <circle cx="642" cy="186" r="4" fill="#FACC15" stroke="#B91C1C" strokeWidth="1.2">
+                          <animate attributeName="opacity" values="1;0.35;1" dur="0.9s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="630" cy="186" r="4" fill="#FACC15" stroke="#B91C1C" strokeWidth="1.2">
+                          <animate attributeName="opacity" values="0.35;1;0.35" dur="0.9s" repeatCount="indefinite" />
+                        </circle>
+                      </g>
+                    )}
 
                     <path
                       d="M 573 216 L 573 142"
@@ -936,6 +995,16 @@ export const RespirationLab: React.FC = () => {
                       className={isPlaying && isEtcActive ? 'animate-flow-dash' : ''}
                       markerEnd="url(#arrow-amber)"
                     />
+                    {isPlaying && isEtcActive && (
+                      <g className="bio-particle-motion">
+                        <circle r="3.5" fill="#F59E0B">
+                          <animateMotion dur="1.4s" repeatCount="indefinite" path="M 573 216 L 573 142" />
+                        </circle>
+                        <circle r="3.5" fill="#F59E0B">
+                          <animateMotion dur="1.4s" begin="0.5s" repeatCount="indefinite" path="M 619 216 L 619 142" />
+                        </circle>
+                      </g>
+                    )}
 
                     <rect x="700" y="162" width="38" height="56" rx="8" fill="#059669" />
                     <circle
@@ -977,6 +1046,16 @@ export const RespirationLab: React.FC = () => {
                       className={isPlaying && isAtpSynthaseActive ? 'animate-flow-dash' : ''}
                       markerEnd="url(#arrow-emerald)"
                     />
+                    {isPlaying && isAtpSynthaseActive && (
+                      <g className="bio-particle-motion">
+                        <circle r="3.8" fill="#10B981">
+                          <animateMotion dur="1.1s" repeatCount="indefinite" path="M 719 142 L 719 210" />
+                        </circle>
+                        <circle r="3.8" fill="#34D399">
+                          <animateMotion dur="1.1s" begin="0.55s" repeatCount="indefinite" path="M 719 142 L 719 210" />
+                        </circle>
+                      </g>
+                    )}
 
                     {isDnpUncoupled && (
                       <g>
@@ -988,6 +1067,16 @@ export const RespirationLab: React.FC = () => {
                           className={isPlaying ? 'animate-flow-dash' : ''}
                           markerEnd="url(#arrow-rose)"
                         />
+                        {isPlaying && (
+                          <g className="bio-particle-motion">
+                            <circle r="4" fill="#EA580C">
+                              <animateMotion dur="1.0s" repeatCount="indefinite" path="M 686 144 L 686 244" />
+                            </circle>
+                            <text x="668" y="218" className="fill-orange-600 text-[11px] font-bold animate-heat-shimmer">
+                              HEAT
+                            </text>
+                          </g>
+                        )}
                         <text x="546" y="272" className="fill-orange-700 text-[10px] font-semibold">
                           DNP Leak: H+ bypasses ATP Synthase → HEAT
                         </text>
@@ -1172,29 +1261,46 @@ export const RespirationLab: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setKrebsMultiplier(1)}
-                  className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                    krebsMultiplier === 1
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
+                  onClick={() => setIsPlayingKrebs((p) => !p)}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
                 >
-                  Per 1 Acetyl CoA (1 turn)
+                  {isPlayingKrebs ? (
+                    <>
+                      <Pause className="h-4 w-4 text-blue-700" /> Pause Cycle
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4 text-blue-700" /> Animate Cycle
+                    </>
+                  )}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setKrebsMultiplier(2)}
-                  className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                    krebsMultiplier === 2
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Per Glucose (2 turns)
-                </button>
+                <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1">
+                  <button
+                    type="button"
+                    onClick={() => setKrebsMultiplier(1)}
+                    className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                      krebsMultiplier === 1
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Per 1 Acetyl CoA (1 turn)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setKrebsMultiplier(2)}
+                    className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                      krebsMultiplier === 2
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Per Glucose (2 turns)
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1229,6 +1335,11 @@ export const RespirationLab: React.FC = () => {
                 </text>
 
                 <line x1="380" y1="58" x2="380" y2="90" stroke="#1D4ED8" strokeWidth="2.5" markerEnd="url(#k-arrow)" />
+                {isPlayingKrebs && (
+                  <circle r="4" fill="#1D4ED8" className="bio-particle-motion">
+                    <animateMotion dur="1.4s" repeatCount="indefinite" path="M 380 58 L 380 90" />
+                  </circle>
+                )}
 
                 {/* Main Cycle Ring */}
                 <circle
@@ -1239,8 +1350,17 @@ export const RespirationLab: React.FC = () => {
                   stroke="#93C5FD"
                   strokeWidth="3"
                   strokeDasharray="8 5"
-                  className="animate-flow-dash-slow"
+                  className={isPlayingKrebs ? 'animate-flow-dash-slow' : ''}
                 />
+                {isPlayingKrebs && (
+                  <circle r="6" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2" className="bio-particle-motion">
+                    <animateMotion
+                      dur="7.2s"
+                      repeatCount="indefinite"
+                      path="M 380 107 A 138 138 0 1 1 379.9 107 Z"
+                    />
+                  </circle>
+                )}
 
                 {/* Step 1 Node: Citrate (6C) */}
                 <g onClick={() => setSelectedKrebsStep('step1')} className="cursor-pointer">
@@ -1250,9 +1370,10 @@ export const RespirationLab: React.FC = () => {
                     width="170"
                     height="56"
                     rx="12"
-                    fill="#FFFFFF"
+                    fill={selectedKrebsStep === 'step1' ? '#EFF6FF' : '#FFFFFF'}
                     stroke={selectedKrebsStep === 'step1' ? '#1D4ED8' : '#CBD5E1'}
                     strokeWidth={selectedKrebsStep === 'step1' ? '3' : '1.5'}
+                    className="svg-morph"
                   />
                   <text x="312" y="116" className="fill-slate-900 text-[13px] font-semibold">
                     1. Citrate (6C)
@@ -1270,9 +1391,10 @@ export const RespirationLab: React.FC = () => {
                     width="206"
                     height="68"
                     rx="12"
-                    fill="#FFFFFF"
+                    fill={selectedKrebsStep === 'step2' ? '#EFF6FF' : '#FFFFFF'}
                     stroke={selectedKrebsStep === 'step2' ? '#1D4ED8' : '#CBD5E1'}
                     strokeWidth={selectedKrebsStep === 'step2' ? '3' : '1.5'}
+                    className="svg-morph"
                   />
                   <text x="528" y="238" className="fill-slate-900 text-[13px] font-semibold">
                     2. 5C Intermediate
@@ -1283,6 +1405,14 @@ export const RespirationLab: React.FC = () => {
                   <text x="528" y="272" className="fill-blue-700 text-[11px] font-mono">
                     +{krebsMultiplier} NADH (Dehydrogenation)
                   </text>
+                  {isPlayingKrebs && (
+                    <g className="animate-co2-float">
+                      <circle cx="702" cy="204" r="9" fill="#FFE4E6" stroke="#E11D48" strokeWidth="1.2" />
+                      <text x="702" y="207" textAnchor="middle" className="fill-rose-800 text-[8px] font-mono font-bold">
+                        CO2
+                      </text>
+                    </g>
+                  )}
                 </g>
 
                 {/* Step 3 Node: 4C Compound */}
@@ -1293,9 +1423,10 @@ export const RespirationLab: React.FC = () => {
                     width="210"
                     height="76"
                     rx="12"
-                    fill="#FFFFFF"
+                    fill={selectedKrebsStep === 'step3' ? '#EFF6FF' : '#FFFFFF'}
                     stroke={selectedKrebsStep === 'step3' ? '#1D4ED8' : '#CBD5E1'}
                     strokeWidth={selectedKrebsStep === 'step3' ? '3' : '1.5'}
+                    className="svg-morph"
                   />
                   <text x="292" y="372" className="fill-slate-900 text-[13px] font-semibold">
                     3. 4C Compound
@@ -1306,6 +1437,14 @@ export const RespirationLab: React.FC = () => {
                   <text x="292" y="408" className="fill-emerald-700 text-[11px] font-mono font-semibold">
                     +{krebsMultiplier} ATP (Substrate-level)
                   </text>
+                  {isPlayingKrebs && (
+                    <g className="animate-co2-float" style={{ animationDelay: '0.8s' }}>
+                      <circle cx="496" cy="364" r="9" fill="#FFE4E6" stroke="#E11D48" strokeWidth="1.2" />
+                      <text x="496" y="367" textAnchor="middle" className="fill-rose-800 text-[8px] font-mono font-bold">
+                        CO2
+                      </text>
+                    </g>
+                  )}
                 </g>
 
                 {/* Step 4 Node: Oxaloacetate (4C) */}
@@ -1316,9 +1455,10 @@ export const RespirationLab: React.FC = () => {
                     width="208"
                     height="68"
                     rx="12"
-                    fill="#FFFFFF"
+                    fill={selectedKrebsStep === 'step4' ? '#EFF6FF' : '#FFFFFF'}
                     stroke={selectedKrebsStep === 'step4' ? '#1D4ED8' : '#CBD5E1'}
                     strokeWidth={selectedKrebsStep === 'step4' ? '3' : '1.5'}
+                    className="svg-morph"
                   />
                   <text x="58" y="238" className="fill-slate-900 text-[13px] font-semibold">
                     4. Oxaloacetate (4C)
@@ -1407,9 +1547,26 @@ export const RespirationLab: React.FC = () => {
                   <FlaskConical className="h-4 w-4 text-blue-700" />
                   Virtual U-Tube Respirometer &amp; RQ Lab
                 </div>
-                <div className="font-mono text-sm text-slate-600 tabular-nums">
-                  Temperature: {tempC} °C · KOH Absorber:{' '}
-                  {kohPresent ? 'PRESENT' : 'ABSENT'}
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="font-mono text-sm text-slate-600 tabular-nums">
+                    Temperature: {tempC} °C · KOH Absorber:{' '}
+                    {kohPresent ? 'PRESENT' : 'ABSENT'}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsRespiroPlaying((p) => !p)}
+                    className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    {isRespiroPlaying ? (
+                      <>
+                        <Pause className="h-3.5 w-3.5 text-blue-700" /> Pause Gas Flow
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-3.5 w-3.5 text-blue-700" /> Animate Gas Flow
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
 
@@ -1456,6 +1613,7 @@ export const RespirationLab: React.FC = () => {
                     height="43"
                     rx="10"
                     fill={kohPresent ? '#DBEAFE' : '#F1F5F9'}
+                    className="svg-morph"
                   />
                   <text x="86" y="272" className="fill-slate-800 text-[11px] font-medium">
                     {kohPresent ? 'KOH Solution' : 'Distilled Water'}
@@ -1476,6 +1634,24 @@ export const RespirationLab: React.FC = () => {
                   <text x="82" y="180" className="fill-slate-700 text-[10px] font-medium">
                     Respiring Tissue
                   </text>
+
+                  {/* Animated O2 uptake & CO2 fate particles */}
+                  {isRespiroPlaying && (
+                    <g className="bio-particle-motion">
+                      <circle r="3.5" fill="#0284C7">
+                        <animateMotion dur="1.7s" repeatCount="indefinite" path="M 130 120 L 130 194" />
+                      </circle>
+                      {kohPresent ? (
+                        <circle r="3.5" fill="#E11D48">
+                          <animateMotion dur="1.6s" repeatCount="indefinite" path="M 130 212 L 130 256" />
+                        </circle>
+                      ) : (
+                        <circle r="3.5" fill="#E11D48">
+                          <animateMotion dur="1.6s" repeatCount="indefinite" path="M 148 192 L 148 122" />
+                        </circle>
+                      )}
+                    </g>
+                  )}
 
                   <text x="84" y="142" className="fill-blue-700 text-[10px] font-mono">
                     O2 in: {activeSubstrate.o2Moles} mol
@@ -1507,6 +1683,21 @@ export const RespirationLab: React.FC = () => {
                   <path d="M 130 110 L 130 46 L 320 46 L 320 120" fill="none" stroke="#475569" strokeWidth="4" />
                   <path d="M 630 110 L 630 46 L 440 46 L 440 120" fill="none" stroke="#475569" strokeWidth="4" />
 
+                  {/* Animated meniscus fluid pulse along top connecting capillary */}
+                  {isRespiroPlaying && scaledShiftMm !== 0 && (
+                    <circle r="4.5" fill="#0284C7" className="bio-particle-motion">
+                      <animateMotion
+                        dur="2.2s"
+                        repeatCount="indefinite"
+                        path={
+                          scaledShiftMm < 0
+                            ? 'M 285 46 L 175 46'
+                            : 'M 175 46 L 285 46'
+                        }
+                      />
+                    </circle>
+                  )}
+
                   <path
                     d="M 320 120 L 320 260 A 60 60 0 0 0 440 260 L 440 120"
                     fill="none"
@@ -1520,6 +1711,7 @@ export const RespirationLab: React.FC = () => {
                     stroke="#0284C7"
                     strokeWidth="12"
                     strokeLinecap="butt"
+                    className="svg-morph"
                   />
                   <line x1="302" y1="145" x2="302" y2="235" stroke="#64748B" strokeWidth="1.5" />
                   <line x1="296" y1="190" x2="308" y2="190" stroke="#0F172A" strokeWidth="1.5" />

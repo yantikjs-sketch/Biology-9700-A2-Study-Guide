@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Play,
   Pause,
@@ -158,12 +158,40 @@ export const PhotosynthesisLab: React.FC = () => {
   const [selectedCalvinStep, setSelectedCalvinStep] =
     useState<CalvinStepId>('fixation');
   const [calvinMult, setCalvinMult] = useState<1 | 3 | 6>(6);
+  const [isPlayingCalvin, setIsPlayingCalvin] = useState(true);
 
   // Limiting factors & spectra state
   const [lightKlx, setLightKlx] = useState(65);
   const [co2Pct, setCo2Pct] = useState(0.08);
   const [tempC, setTempC] = useState(25);
   const [wavelengthNm, setWavelengthNm] = useState(660);
+  const [isSweepingSpectrum, setIsSweepingSpectrum] = useState(false);
+
+  useEffect(() => {
+    if (!isPlayingCalvin || subView !== 'calvin' || perturbation !== 'steady')
+      return;
+    const order: CalvinStepId[] = [
+      'fixation',
+      'reduction',
+      'synthesis',
+      'regeneration',
+    ];
+    const timer = window.setInterval(() => {
+      setSelectedCalvinStep((prev) => {
+        const idx = order.indexOf(prev);
+        return order[(idx + 1) % order.length];
+      });
+    }, 1800);
+    return () => window.clearInterval(timer);
+  }, [isPlayingCalvin, subView, perturbation]);
+
+  useEffect(() => {
+    if (!isSweepingSpectrum || subView !== 'limiting-factors') return;
+    const timer = window.setInterval(() => {
+      setWavelengthNm((prev) => (prev >= 700 ? 400 : prev + 5));
+    }, 130);
+    return () => window.clearInterval(timer);
+  }, [isSweepingSpectrum, subView]);
 
   const activeComplex = COMPLEX_DETAILS[selectedComplex];
   const activeCalvin = CALVIN_STEPS[selectedCalvinStep];
@@ -448,6 +476,11 @@ export const PhotosynthesisLab: React.FC = () => {
                         className={isPlaying ? 'animate-flow-dash' : ''}
                         markerEnd="url(#p-arrow-gold)"
                       />
+                      {isPlaying && (
+                        <circle r="4" fill="#FACC15" stroke="#B45309" strokeWidth="1" className="bio-particle-motion">
+                          <animateMotion dur="1.0s" repeatCount="indefinite" path="M 88 52 L 122 146" />
+                        </circle>
+                      )}
                       <text x="68" y="44" className="fill-amber-700 text-[11px] font-semibold">
                         Light (hν)
                       </text>
@@ -461,6 +494,11 @@ export const PhotosynthesisLab: React.FC = () => {
                     className={isPlaying ? 'animate-flow-dash' : ''}
                     markerEnd="url(#p-arrow-gold)"
                   />
+                  {isPlaying && (
+                    <circle r="4" fill="#FACC15" stroke="#B45309" strokeWidth="1" className="bio-particle-motion">
+                      <animateMotion dur="1.0s" begin="0.4s" repeatCount="indefinite" path="M 412 52 L 444 146" />
+                    </circle>
+                  )}
                   <text x="394" y="44" className="fill-amber-700 text-[11px] font-semibold">
                     Light (hν)
                   </text>
@@ -500,6 +538,12 @@ export const PhotosynthesisLab: React.FC = () => {
                           className={isPlaying ? 'animate-flow-dash' : ''}
                           markerEnd="url(#p-arrow-sky)"
                         />
+                        {isPlaying && (
+                          <g className="bio-particle-motion">
+                            <circle cx="192" cy="306" r="4" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1.5" className="animate-bubble" />
+                            <circle cx="204" cy="298" r="3" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1.2" className="animate-bubble" style={{ animationDelay: '0.7s' }} />
+                          </g>
+                        )}
                       </g>
                     )}
                   </g>
@@ -530,6 +574,11 @@ export const PhotosynthesisLab: React.FC = () => {
                       className={isPlaying ? 'animate-flow-dash' : ''}
                       markerEnd="url(#p-arrow-sky)"
                     />
+                    {isPlaying && (
+                      <circle r="3.8" fill="#0284C7" className="bio-particle-motion">
+                        <animateMotion dur="1.3s" repeatCount="indefinite" path="M 311 110 L 311 312" />
+                      </circle>
+                    )}
                     <text x="298" y="98" className="fill-sky-800 text-[11px] font-mono font-semibold">
                       H+
                     </text>
@@ -556,14 +605,21 @@ export const PhotosynthesisLab: React.FC = () => {
                   </g>
 
                   {!isCyclic && (
-                    <path
-                      d="M 180 185 L 262 195"
-                      fill="none"
-                      stroke="#EAB308"
-                      strokeWidth="3"
-                      className={isPlaying ? 'animate-flow-dash' : ''}
-                      markerEnd="url(#p-arrow-gold)"
-                    />
+                    <>
+                      <path
+                        d="M 180 185 L 262 195"
+                        fill="none"
+                        stroke="#EAB308"
+                        strokeWidth="3"
+                        className={isPlaying ? 'animate-flow-dash' : ''}
+                        markerEnd="url(#p-arrow-gold)"
+                      />
+                      {isPlaying && (
+                        <circle r="4" fill="#FACC15" stroke="#854D0E" strokeWidth="1" className="bio-particle-motion">
+                          <animateMotion dur="1.1s" repeatCount="indefinite" path="M 180 185 L 262 195" />
+                        </circle>
+                      )}
+                    </>
                   )}
                   <path
                     d="M 356 205 L 414 205"
@@ -573,6 +629,11 @@ export const PhotosynthesisLab: React.FC = () => {
                     className={isPlaying ? 'animate-flow-dash' : ''}
                     markerEnd="url(#p-arrow-gold)"
                   />
+                  {isPlaying && (
+                    <circle r="4" fill="#FACC15" stroke="#854D0E" strokeWidth="1" className="bio-particle-motion">
+                      <animateMotion dur="1.1s" begin="0.35s" repeatCount="indefinite" path="M 356 205 L 414 205" />
+                    </circle>
+                  )}
 
                   {isCyclic && (
                     <g>
@@ -584,6 +645,11 @@ export const PhotosynthesisLab: React.FC = () => {
                         className={isPlaying ? 'animate-flow-dash' : ''}
                         markerEnd="url(#p-arrow-gold)"
                       />
+                      {isPlaying && (
+                        <circle r="4.2" fill="#FACC15" stroke="#854D0E" strokeWidth="1" className="bio-particle-motion">
+                          <animateMotion dur="1.4s" repeatCount="indefinite" path="M 462 146 C 462 96, 336 96, 336 148" />
+                        </circle>
+                      )}
                       <text x="342" y="98" className="fill-amber-800 text-[11px] font-semibold">
                         Cyclic e- return via Ferredoxin
                       </text>
@@ -623,6 +689,11 @@ export const PhotosynthesisLab: React.FC = () => {
                           className={isPlaying ? 'animate-flow-dash' : ''}
                           markerEnd="url(#p-arrow-gold)"
                         />
+                        {isPlaying && (
+                          <circle r="4" fill="#FACC15" stroke="#854D0E" strokeWidth="1" className="bio-particle-motion">
+                            <animateMotion dur="1.0s" begin="0.5s" repeatCount="indefinite" path="M 506 180 L 544 172" />
+                          </circle>
+                        )}
                         {dcpipActive ? (
                           <g>
                             <rect
@@ -633,7 +704,16 @@ export const PhotosynthesisLab: React.FC = () => {
                               rx="8"
                               fill="#E0F2FE"
                               stroke="#0284C7"
-                            />
+                            >
+                              {isPlaying && (
+                                <animate
+                                  attributeName="fill"
+                                  values="#BAE6FD;#F1F5F9;#BAE6FD"
+                                  dur="2.4s"
+                                  repeatCount="indefinite"
+                                />
+                              )}
+                            </rect>
                             <text x="546" y="86" className="fill-sky-900 text-[10px] font-mono font-semibold">
                               DCPIP (Blue) + 2e-
                             </text>
@@ -703,6 +783,16 @@ export const PhotosynthesisLab: React.FC = () => {
                       className={isPlaying ? 'animate-flow-dash' : ''}
                       markerEnd="url(#p-arrow-emerald)"
                     />
+                    {isPlaying && (
+                      <g className="bio-particle-motion">
+                        <circle r="3.8" fill="#059669">
+                          <animateMotion dur="1.2s" repeatCount="indefinite" path="M 719 348 L 719 162" />
+                        </circle>
+                        <circle r="3.8" fill="#34D399">
+                          <animateMotion dur="1.2s" begin="0.6s" repeatCount="indefinite" path="M 719 348 L 719 162" />
+                        </circle>
+                      </g>
+                    )}
                     <text x="674" y="88" className="fill-amber-800 text-[12px] font-mono font-semibold">
                       ADP + Pi → ATP
                     </text>
@@ -849,21 +939,39 @@ export const PhotosynthesisLab: React.FC = () => {
                 ))}
               </div>
 
-              <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1">
-                {([1, 3, 6] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => setCalvinMult(m)}
-                    className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                      calvinMult === m
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {m === 1 ? '1 CO2' : m === 3 ? '3 CO2 (1 TP)' : '6 CO2 (1 Glucose)'}
-                  </button>
-                ))}
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  disabled={perturbation !== 'steady'}
+                  onClick={() => setIsPlayingCalvin((p) => !p)}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-45"
+                >
+                  {isPlayingCalvin && perturbation === 'steady' ? (
+                    <>
+                      <Pause className="h-3.5 w-3.5 text-emerald-700" /> Pause Cycle
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-3.5 w-3.5 text-emerald-700" /> Animate Cycle
+                    </>
+                  )}
+                </button>
+                <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1">
+                  {([1, 3, 6] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setCalvinMult(m)}
+                      className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                        calvinMult === m
+                          ? 'bg-white text-slate-900 shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {m === 1 ? '1 CO2' : m === 3 ? '3 CO2 (1 TP)' : '6 CO2 (1 Glucose)'}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -888,8 +996,17 @@ export const PhotosynthesisLab: React.FC = () => {
                     stroke="#10B981"
                     strokeWidth="3"
                     strokeDasharray="8 5"
-                    className={perturbation === 'steady' ? 'animate-flow-dash-slow' : ''}
+                    className={perturbation === 'steady' && isPlayingCalvin ? 'animate-flow-dash-slow' : ''}
                   />
+                  {perturbation === 'steady' && isPlayingCalvin && (
+                    <circle r="5.5" fill="#059669" stroke="#FFFFFF" strokeWidth="1.8" className="bio-particle-motion">
+                      <animateMotion
+                        dur="7.2s"
+                        repeatCount="indefinite"
+                        path="M 190 90 A 105 105 0 1 1 189.9 90 Z"
+                      />
+                    </circle>
+                  )}
 
                   {/* CO2 Input */}
                   <rect
@@ -900,10 +1017,16 @@ export const PhotosynthesisLab: React.FC = () => {
                     rx="8"
                     fill={perturbation === 'no-co2' ? '#FEE2E2' : '#E0F2FE'}
                     stroke={perturbation === 'no-co2' ? '#DC2626' : '#0284C7'}
+                    className="svg-morph"
                   />
                   <text x="148" y="60" className="fill-slate-900 text-[11px] font-mono font-semibold">
                     {perturbation === 'no-co2' ? 'CO2 = 0%' : `${calvinMult} × CO2 (1C) +`}
                   </text>
+                  {perturbation !== 'no-co2' && isPlayingCalvin && (
+                    <circle r="4" fill="#0284C7" className="bio-particle-motion">
+                      <animateMotion dur="1.5s" repeatCount="indefinite" path="M 190 72 L 190 100" />
+                    </circle>
+                  )}
 
                   {/* 1. RuBP / Carbon Fixation */}
                   <g onClick={() => setSelectedCalvinStep('fixation')} className="cursor-pointer">
@@ -913,9 +1036,10 @@ export const PhotosynthesisLab: React.FC = () => {
                       width="124"
                       height="52"
                       rx="10"
-                      fill="#FFFFFF"
+                      fill={selectedCalvinStep === 'fixation' ? '#ECFDF5' : '#FFFFFF'}
                       stroke={selectedCalvinStep === 'fixation' ? '#047857' : '#059669'}
                       strokeWidth={selectedCalvinStep === 'fixation' ? '3' : '1.5'}
+                      className="svg-morph"
                     />
                     <text x="50" y="124" className="fill-slate-900 text-[12px] font-semibold">
                       {calvinMult} × RuBP (5C)
@@ -933,9 +1057,10 @@ export const PhotosynthesisLab: React.FC = () => {
                       width="134"
                       height="52"
                       rx="10"
-                      fill="#FFFFFF"
+                      fill={selectedCalvinStep === 'reduction' ? '#F0F9FF' : '#FFFFFF'}
                       stroke={selectedCalvinStep === 'reduction' ? '#0369A1' : '#0284C7'}
                       strokeWidth={selectedCalvinStep === 'reduction' ? '3' : '1.5'}
+                      className="svg-morph"
                     />
                     <text x="234" y="124" className="fill-slate-900 text-[12px] font-semibold">
                       {2 * calvinMult} × GP (3C)
@@ -953,9 +1078,10 @@ export const PhotosynthesisLab: React.FC = () => {
                       width="140"
                       height="54"
                       rx="10"
-                      fill="#FFFFFF"
+                      fill={selectedCalvinStep === 'synthesis' ? '#FFFBEB' : '#FFFFFF'}
                       stroke={selectedCalvinStep === 'synthesis' ? '#B45309' : '#D97706'}
                       strokeWidth={selectedCalvinStep === 'synthesis' ? '3' : '1.5'}
+                      className="svg-morph"
                     />
                     <text x="136" y="286" className="fill-slate-900 text-[12px] font-semibold">
                       {2 * calvinMult} × TP (3C)
@@ -973,9 +1099,10 @@ export const PhotosynthesisLab: React.FC = () => {
                       width="116"
                       height="44"
                       rx="8"
-                      fill="#FFFFFF"
+                      fill={selectedCalvinStep === 'regeneration' ? '#F1F5F9' : '#FFFFFF'}
                       stroke={selectedCalvinStep === 'regeneration' ? '#0F172A' : '#CBD5E1'}
                       strokeWidth={selectedCalvinStep === 'regeneration' ? '2.5' : '1.5'}
+                      className="svg-morph"
                     />
                     <text x="24" y="211" className="fill-slate-800 text-[10px] font-semibold">
                       4. 5/6 TP → RuBP
@@ -1069,6 +1196,7 @@ export const PhotosynthesisLab: React.FC = () => {
                     fill="none"
                     stroke="#1D4ED8"
                     strokeWidth="3"
+                    className="svg-morph"
                   />
 
                   {/* RuBP Curve */}
@@ -1083,7 +1211,38 @@ export const PhotosynthesisLab: React.FC = () => {
                     fill="none"
                     stroke="#059669"
                     strokeWidth="3"
+                    className="svg-morph"
                   />
+
+                  {/* Animated curve tracer beads */}
+                  <g className="bio-particle-motion">
+                    <circle r="4.5" fill="#1D4ED8" stroke="#FFFFFF" strokeWidth="1.5">
+                      <animateMotion
+                        dur="3.4s"
+                        repeatCount="indefinite"
+                        path={
+                          perturbation === 'steady'
+                            ? 'M 48 168 L 344 168'
+                            : perturbation === 'dark'
+                              ? 'M 48 168 L 145 168 C 175 110, 225 104, 344 104'
+                              : 'M 48 168 L 145 168 C 175 235, 225 258, 344 262'
+                        }
+                      />
+                    </circle>
+                    <circle r="4.5" fill="#059669" stroke="#FFFFFF" strokeWidth="1.5">
+                      <animateMotion
+                        dur="3.4s"
+                        repeatCount="indefinite"
+                        path={
+                          perturbation === 'steady'
+                            ? 'M 48 202 L 344 202'
+                            : perturbation === 'dark'
+                              ? 'M 48 202 L 145 202 C 175 252, 225 268, 344 272'
+                              : 'M 48 202 L 145 202 C 175 128, 225 114, 344 114'
+                        }
+                      />
+                    </circle>
+                  </g>
 
                   <line x1="60" y1="346" x2="86" y2="346" stroke="#1D4ED8" strokeWidth="3" />
                   <text x="92" y="350" className="fill-slate-800 text-[12px] font-semibold">
@@ -1262,30 +1421,69 @@ export const PhotosynthesisLab: React.FC = () => {
                       stroke="#0284C7"
                       strokeWidth="1.5"
                       className="animate-bubble"
+                      style={{
+                        animationDuration: `${Math.max(0.65, 2.5 - currentRate * 0.017).toFixed(2)}s`,
+                      }}
                     />
                   )}
-                  {currentRate > 35 && (
+                  {currentRate > 25 && (
                     <circle
                       cx="74"
-                      cy="74"
+                      cy="82"
                       r="3.5"
                       fill="#FFFFFF"
                       stroke="#0284C7"
                       strokeWidth="1.5"
                       className="animate-bubble"
-                      style={{ animationDelay: '0.5s' }}
+                      style={{
+                        animationDelay: '0.35s',
+                        animationDuration: `${Math.max(0.65, 2.5 - currentRate * 0.017).toFixed(2)}s`,
+                      }}
                     />
                   )}
-                  {currentRate > 65 && (
+                  {currentRate > 48 && (
                     <circle
-                      cx="85"
-                      cy="62"
-                      r="4.5"
+                      cx="86"
+                      cy="74"
+                      r="4.2"
                       fill="#FFFFFF"
                       stroke="#0284C7"
                       strokeWidth="1.5"
                       className="animate-bubble"
-                      style={{ animationDelay: '1.0s' }}
+                      style={{
+                        animationDelay: '0.7s',
+                        animationDuration: `${Math.max(0.65, 2.5 - currentRate * 0.017).toFixed(2)}s`,
+                      }}
+                    />
+                  )}
+                  {currentRate > 70 && (
+                    <circle
+                      cx="77"
+                      cy="62"
+                      r="3.8"
+                      fill="#FFFFFF"
+                      stroke="#0284C7"
+                      strokeWidth="1.5"
+                      className="animate-bubble"
+                      style={{
+                        animationDelay: '1.05s',
+                        animationDuration: `${Math.max(0.65, 2.5 - currentRate * 0.017).toFixed(2)}s`,
+                      }}
+                    />
+                  )}
+                  {currentRate > 86 && (
+                    <circle
+                      cx="83"
+                      cy="54"
+                      r="3.2"
+                      fill="#FFFFFF"
+                      stroke="#0284C7"
+                      strokeWidth="1.5"
+                      className="animate-bubble"
+                      style={{
+                        animationDelay: '1.35s',
+                        animationDuration: `${Math.max(0.65, 2.5 - currentRate * 0.017).toFixed(2)}s`,
+                      }}
                     />
                   )}
                 </svg>
@@ -1306,8 +1504,25 @@ export const PhotosynthesisLab: React.FC = () => {
                     Compare light absorption by Chlorophyll a, Chlorophyll b &amp; Carotenoids against the Action Spectrum (photosynthesis rate)
                   </p>
                 </div>
-                <div className="font-mono text-sm font-semibold text-slate-900 tabular-nums">
-                  λ = {wavelengthNm} nm · Action: {spectral.action}%
+                <div className="flex items-center gap-3">
+                  <div className="font-mono text-sm font-semibold text-slate-900 tabular-nums">
+                    λ = {wavelengthNm} nm · Action: {spectral.action}%
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsSweepingSpectrum((p) => !p)}
+                    className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    {isSweepingSpectrum ? (
+                      <>
+                        <Pause className="h-3.5 w-3.5 text-emerald-700" /> Stop Sweep
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-3.5 w-3.5 text-emerald-700" /> Sweep λ
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
   AlertTriangle,
@@ -238,6 +238,7 @@ export const ControlCoordinationLab: React.FC = () => {
 
   // Sub-view 1 states: Action Potential & Synapse
   const [apPhase, setApPhase] = useState<ActionPotentialPhase>('depolarisation');
+  const [isPlayingAp, setIsPlayingAp] = useState<boolean>(false);
   const [isMyelinated, setIsMyelinated] = useState(true);
   const [stimulusLevel, setStimulusLevel] = useState<
     'sub' | 'moderate' | 'strong'
@@ -245,6 +246,7 @@ export const ControlCoordinationLab: React.FC = () => {
   const [synapseCondition, setSynapseCondition] =
     useState<SynapseCondition>('normal');
   const [synapseStep, setSynapseStep] = useState<SynapseStepId>(3);
+  const [isPlayingSynapse, setIsPlayingSynapse] = useState<boolean>(true);
 
   // Sub-view 2 states: Muscle Sarcomere
   const [contractionPct, setContractionPct] = useState<number>(35);
@@ -261,9 +263,38 @@ export const ControlCoordinationLab: React.FC = () => {
     useState<PlantRegulatorTab>('auxin');
   const [auxinActive, setAuxinActive] = useState<boolean>(true);
   const [seedStage, setSeedStage] = useState<SeedStageId>(3);
+  const [isPlayingSeed, setIsPlayingSeed] = useState<boolean>(true);
+
+  // Auto-advance Action Potential phases when Play is toggled
+  useEffect(() => {
+    if (!isPlayingAp || subView !== 'nerve-synapse') return;
+    const order: ActionPotentialPhase[] = [
+      'resting',
+      'threshold',
+      'depolarisation',
+      'repolarisation',
+      'hyperpolarisation',
+    ];
+    const timer = window.setInterval(() => {
+      setApPhase((prev) => {
+        const idx = order.indexOf(prev);
+        return order[(idx + 1) % order.length];
+      });
+    }, 1500);
+    return () => window.clearInterval(timer);
+  }, [isPlayingAp, subView]);
+
+  // Auto-advance Cholinergic Synapse steps
+  useEffect(() => {
+    if (!isPlayingSynapse || subView !== 'nerve-synapse') return;
+    const timer = window.setInterval(() => {
+      setSynapseStep((prev) => (prev === 4 ? 1 : ((prev + 1) as SynapseStepId)));
+    }, 1700);
+    return () => window.clearInterval(timer);
+  }, [isPlayingSynapse, subView]);
 
   // Auto-advance cross-bridge step safely via interval button toggle
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isPlayingCycle || !hasAtp) return;
     const timer = window.setInterval(() => {
       setCrossBridgeStep((prev) =>
@@ -272,6 +303,16 @@ export const ControlCoordinationLab: React.FC = () => {
     }, 1500);
     return () => window.clearInterval(timer);
   }, [isPlayingCycle, hasAtp]);
+
+  // Auto-advance Gibberellin seed germination steps
+  useEffect(() => {
+    if (!isPlayingSeed || subView !== 'plant' || plantRegulatorTab !== 'gibberellin')
+      return;
+    const timer = window.setInterval(() => {
+      setSeedStage((prev) => (prev === 4 ? 1 : ((prev + 1) as SeedStageId)));
+    }, 1750);
+    return () => window.clearInterval(timer);
+  }, [isPlayingSeed, subView, plantRegulatorTab]);
 
   const activePhase = AP_PHASES[apPhase];
   const activeStep = SYNAPSE_STEPS[synapseStep];
@@ -426,6 +467,21 @@ export const ControlCoordinationLab: React.FC = () => {
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
+                  onClick={() => setIsPlayingAp((p) => !p)}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-md bg-violet-700 px-3.5 py-1.5 text-sm font-medium text-white hover:bg-violet-800"
+                >
+                  {isPlayingAp ? (
+                    <>
+                      <Pause className="h-4 w-4" /> Pause Sweep
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4" /> Sweep Phases
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
                   onClick={() => setIsMyelinated((m) => !m)}
                   className={`whitespace-nowrap shrink-0 rounded-md border px-3.5 py-1.5 text-sm font-medium transition-colors ${
                     isMyelinated
@@ -447,7 +503,10 @@ export const ControlCoordinationLab: React.FC = () => {
                   <button
                     key={phaseKey}
                     type="button"
-                    onClick={() => setApPhase(phaseKey)}
+                    onClick={() => {
+                      setIsPlayingAp(false);
+                      setApPhase(phaseKey);
+                    }}
                     className={`whitespace-nowrap shrink-0 rounded-md border px-3.5 py-2 text-sm font-medium transition-colors ${
                       apPhase === phaseKey
                         ? 'border-violet-700 bg-violet-700 text-white'
@@ -624,6 +683,7 @@ export const ControlCoordinationLab: React.FC = () => {
                       fill="#7C3AED"
                       stroke="#FFFFFF"
                       strokeWidth="2.5"
+                      className="svg-morph"
                     />
 
                     {/* Axis labels */}
@@ -802,6 +862,14 @@ export const ControlCoordinationLab: React.FC = () => {
                         strokeWidth="2"
                         className="animate-flow-dash"
                       />
+                      <g className="bio-particle-motion">
+                        <circle r="3" fill="#14B8A6">
+                          <animateMotion dur="1.6s" repeatCount="indefinite" path="M 60 120 L 60 34" />
+                        </circle>
+                        <circle r="3" fill="#0284C7">
+                          <animateMotion dur="1.6s" begin="0.8s" repeatCount="indefinite" path="M 92 34 L 92 120" />
+                        </circle>
+                      </g>
                     </g>
 
                     {/* 2. Voltage-gated Na+ Channel */}
@@ -817,6 +885,7 @@ export const ControlCoordinationLab: React.FC = () => {
                             ? '#D97706'
                             : '#64748B'
                         }
+                        className="svg-morph"
                       />
                       <text
                         x="216"
@@ -856,6 +925,14 @@ export const ControlCoordinationLab: React.FC = () => {
                             points="210,126 222,126 216,136"
                             fill="#F59E0B"
                           />
+                          <g className="bio-particle-motion">
+                            <circle r="4" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="1">
+                              <animateMotion dur="0.85s" repeatCount="indefinite" path="M 216 28 L 216 132" />
+                            </circle>
+                            <circle r="4" fill="#FBBF24" stroke="#FFFFFF" strokeWidth="1">
+                              <animateMotion dur="0.85s" begin="0.42s" repeatCount="indefinite" path="M 216 28 L 216 132" />
+                            </circle>
+                          </g>
                         </>
                       )}
                     </g>
@@ -874,6 +951,7 @@ export const ControlCoordinationLab: React.FC = () => {
                             ? '#7C3AED'
                             : '#64748B'
                         }
+                        className="svg-morph"
                       />
                       <text
                         x="354"
@@ -911,6 +989,14 @@ export const ControlCoordinationLab: React.FC = () => {
                             points="348,34 360,34 354,24"
                             fill="#8B5CF6"
                           />
+                          <g className="bio-particle-motion">
+                            <circle r="4" fill="#8B5CF6" stroke="#FFFFFF" strokeWidth="1">
+                              <animateMotion dur="0.9s" repeatCount="indefinite" path="M 354 132 L 354 28" />
+                            </circle>
+                            <circle r="4" fill="#A78BFA" stroke="#FFFFFF" strokeWidth="1">
+                              <animateMotion dur="0.9s" begin="0.45s" repeatCount="indefinite" path="M 354 132 L 354 28" />
+                            </circle>
+                          </g>
                         </>
                       )}
                     </g>
@@ -996,6 +1082,21 @@ export const ControlCoordinationLab: React.FC = () => {
                     Step through synaptic transmission and test neurotoxins (organophosphates vs curare).
                   </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setIsPlayingSynapse((p) => !p)}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                >
+                  {isPlayingSynapse ? (
+                    <>
+                      <Pause className="h-3.5 w-3.5 text-violet-700" /> Pause Steps
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-3.5 w-3.5 text-violet-700" /> Animate Steps
+                    </>
+                  )}
+                </button>
               </div>
 
               {/* Condition Switcher */}
@@ -1030,7 +1131,10 @@ export const ControlCoordinationLab: React.FC = () => {
                   <button
                     key={s}
                     type="button"
-                    onClick={() => setSynapseStep(s)}
+                    onClick={() => {
+                      setIsPlayingSynapse(false);
+                      setSynapseStep(s);
+                    }}
                     className={`rounded-md border px-3 py-2 text-left text-xs sm:text-sm font-medium transition-colors ${
                       synapseStep === s
                         ? 'border-violet-700 bg-violet-50 text-violet-950'
@@ -1047,6 +1151,159 @@ export const ControlCoordinationLab: React.FC = () => {
                           : 'AChE Reset'}
                   </button>
                 ))}
+              </div>
+
+              {/* Live Animated Synaptic Cleft Diagram */}
+              <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+                <svg
+                  viewBox="0 0 480 170"
+                  className="w-full h-auto"
+                  role="img"
+                  aria-label="Animated cholinergic synaptic cleft transmission diagram"
+                >
+                  {/* Presynaptic Knob */}
+                  <path
+                    d="M 60 10 L 420 10 L 420 56 Q 420 82, 380 82 L 100 82 Q 60 82, 60 56 Z"
+                    fill="#EDE9FE"
+                    stroke="#7C3AED"
+                    strokeWidth="2.5"
+                  />
+                  <text x="82" y="30" fontSize="10.5" fontWeight="700" fill="#4C1D95">
+                    Presynaptic Knob
+                  </text>
+
+                  {/* Voltage-gated Ca2+ channel */}
+                  <rect
+                    x="72"
+                    y="62"
+                    width="18"
+                    height="24"
+                    rx="4"
+                    fill={synapseStep >= 1 ? '#DC2626' : '#64748B'}
+                    className="svg-morph"
+                  />
+                  <text x="100" y="72" fontSize="9.5" fontWeight="600" fill="#991B1B">
+                    Ca2+ Channel
+                  </text>
+                  {synapseStep >= 1 && isPlayingSynapse && (
+                    <circle r="3.8" fill="#DC2626" className="bio-particle-motion">
+                      <animateMotion dur="1.0s" repeatCount="indefinite" path="M 55 94 L 112 52" />
+                    </circle>
+                  )}
+
+                  {/* Synaptic Vesicles (move toward membrane on Step 2+) */}
+                  <circle
+                    cx="210"
+                    cy={synapseStep >= 2 ? 68 : 42}
+                    r="11"
+                    fill="#DDD6FE"
+                    stroke="#6D28D9"
+                    strokeWidth="1.8"
+                    className="svg-morph"
+                  />
+                  <circle
+                    cx="275"
+                    cy={synapseStep >= 2 ? 68 : 46}
+                    r="11"
+                    fill="#DDD6FE"
+                    stroke="#6D28D9"
+                    strokeWidth="1.8"
+                    className="svg-morph"
+                  />
+
+                  {/* Synaptic Cleft Label */}
+                  <text x="390" y="103" textAnchor="end" fontSize="9.5" fontWeight="600" fill="#475569">
+                    Synaptic Cleft (~20 nm)
+                  </text>
+
+                  {/* Diffusing ACh spheres */}
+                  {synapseStep >= 2 && (
+                    <g className="bio-particle-motion">
+                      <circle cx="206" cy="96" r="4" fill="#059669">
+                        {isPlayingSynapse && (
+                          <animateMotion dur="1.1s" repeatCount="indefinite" path="M 0 -18 L 0 18" />
+                        )}
+                      </circle>
+                      <circle cx="274" cy="96" r="4" fill="#059669">
+                        {isPlayingSynapse && (
+                          <animateMotion dur="1.1s" begin="0.35s" repeatCount="indefinite" path="M 0 -18 L 0 18" />
+                        )}
+                      </circle>
+                    </g>
+                  )}
+
+                  {/* AChE Enzyme on cleft */}
+                  <rect
+                    x="325"
+                    y="108"
+                    width="58"
+                    height="18"
+                    rx="5"
+                    fill={synapseCondition === 'organophosphate' ? '#FECACA' : '#CCFBF1'}
+                    stroke={synapseCondition === 'organophosphate' ? '#DC2626' : '#0F766E'}
+                  />
+                  <text
+                    x="354"
+                    y="120"
+                    textAnchor="middle"
+                    fontSize="9"
+                    fontWeight="700"
+                    fill={synapseCondition === 'organophosphate' ? '#991B1B' : '#0F766E'}
+                  >
+                    {synapseCondition === 'organophosphate' ? 'AChE ✕' : 'AChE'}
+                  </text>
+
+                  {/* Postsynaptic Membrane */}
+                  <rect
+                    x="60"
+                    y="126"
+                    width="360"
+                    height="36"
+                    rx="8"
+                    fill="#E0F2FE"
+                    stroke="#0284C7"
+                    strokeWidth="2.5"
+                  />
+                  <text x="82" y="150" fontSize="10.5" fontWeight="700" fill="#0369A1">
+                    Postsynaptic Membrane
+                  </text>
+
+                  {/* Ligand-gated Na+ channels */}
+                  {[208, 274].map((nx) => {
+                    const isChannelOpen =
+                      synapseCondition === 'organophosphate' ||
+                      (synapseCondition === 'normal' && synapseStep === 3);
+                    return (
+                      <g key={nx}>
+                        <rect
+                          x={nx - 14}
+                          y="118"
+                          width="28"
+                          height="24"
+                          rx="5"
+                          fill={
+                            synapseCondition === 'curare'
+                              ? '#F97316'
+                              : isChannelOpen
+                                ? '#059669'
+                                : '#64748B'
+                          }
+                          className="svg-morph"
+                        />
+                        {synapseCondition === 'curare' && (
+                          <text x={nx} y="133" textAnchor="middle" fontSize="8" fontWeight="700" fill="#FFFFFF">
+                            Curare
+                          </text>
+                        )}
+                        {isChannelOpen && isPlayingSynapse && (
+                          <circle r="3.8" fill="#F59E0B" className="bio-particle-motion">
+                            <animateMotion dur="0.9s" repeatCount="indefinite" path={`M ${nx} 108 L ${nx} 154`} />
+                          </circle>
+                        )}
+                      </g>
+                    );
+                  })}
+                </svg>
               </div>
 
               {/* Active Step Card */}
@@ -1356,6 +1613,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         stroke="#0F172A"
                         strokeWidth="6"
                         strokeLinecap="round"
+                        className="svg-morph"
                       />
                       <text
                         x={leftZ}
@@ -1364,6 +1622,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         fontSize="11"
                         fontWeight="700"
                         fill="#0F172A"
+                        className="svg-morph"
                       >
                         Z-line
                       </text>
@@ -1377,6 +1636,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         stroke="#0F172A"
                         strokeWidth="6"
                         strokeLinecap="round"
+                        className="svg-morph"
                       />
                       <text
                         x={rightZ}
@@ -1385,6 +1645,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         fontSize="11"
                         fontWeight="700"
                         fill="#0F172A"
+                        className="svg-morph"
                       >
                         Z-line
                       </text>
@@ -1400,6 +1661,7 @@ export const ControlCoordinationLab: React.FC = () => {
                             stroke="#0284C7"
                             strokeWidth="4.5"
                             strokeLinecap="round"
+                            className="svg-morph"
                           />
                           <line
                             x1={rightZ}
@@ -1409,6 +1671,7 @@ export const ControlCoordinationLab: React.FC = () => {
                             stroke="#0284C7"
                             strokeWidth="4.5"
                             strokeLinecap="round"
+                            className="svg-morph"
                           />
                         </g>
                       ))}
@@ -1570,6 +1833,7 @@ export const ControlCoordinationLab: React.FC = () => {
                     stroke="#0F766E"
                     strokeWidth="4.5"
                     strokeLinecap="round"
+                    className="svg-morph"
                   />
                   {/* Troponin + Ca2+ */}
                   <circle
@@ -1577,9 +1841,10 @@ export const ControlCoordinationLab: React.FC = () => {
                     cy={activeBridge.caBound ? 26 : 42}
                     r="8"
                     fill="#F59E0B"
+                    className="svg-morph"
                   />
                   {activeBridge.caBound && (
-                    <circle cx="100" cy="14" r="5" fill="#EF4444" />
+                    <circle cx="100" cy="14" r="5" fill="#EF4444" className="svg-morph" />
                   )}
                   <text x="26" y="16" fontSize="10" fill="#0F172A" fontWeight="600">
                     Actin + Tropomyosin (teal) + Troponin (amber){' '}
@@ -1597,6 +1862,7 @@ export const ControlCoordinationLab: React.FC = () => {
                   />
                   <g
                     transform={`translate(210, 102) rotate(${activeBridge.angleDeg})`}
+                    className="svg-morph"
                   >
                     <line
                       x1="0"
@@ -1606,6 +1872,7 @@ export const ControlCoordinationLab: React.FC = () => {
                       stroke="#5B21B6"
                       strokeWidth="5"
                       strokeLinecap="round"
+                      className="svg-morph"
                     />
                     <ellipse
                       cx="0"
@@ -1613,6 +1880,7 @@ export const ControlCoordinationLab: React.FC = () => {
                       rx="13"
                       ry="9"
                       fill="#7C3AED"
+                      className="svg-morph"
                     />
                   </g>
                   <text x="228" y="88" fontSize="10.5" fill="#4C1D95" fontWeight="600">
@@ -1918,6 +2186,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         fill="#BAE6FD"
                         stroke="#0284C7"
                         strokeWidth="1.5"
+                        className="svg-morph"
                       />
                       <text
                         x="120"
@@ -1940,6 +2209,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         height="48"
                         rx="6"
                         fill={auxinActive ? '#D97706' : '#64748B'}
+                        className="svg-morph"
                       />
                       <text
                         x="249"
@@ -1960,6 +2230,9 @@ export const ControlCoordinationLab: React.FC = () => {
                             className="animate-flow-dash"
                           />
                           <polygon points="280,82 280,94 292,88" fill="#D97706" />
+                          <circle r="3.8" fill="#D97706" className="bio-particle-motion">
+                            <animateMotion dur="1.1s" repeatCount="indefinite" path="M 225 88 L 285 88" />
+                          </circle>
                         </>
                       )}
 
@@ -1973,6 +2246,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         fill={auxinActive ? '#FEF3C7' : '#E2E8F0'}
                         stroke="#94A3B8"
                         strokeWidth="1.5"
+                        className="svg-morph"
                       />
                       <text
                         x="336"
@@ -1992,6 +2266,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         y2={auxinActive ? 58 : 74}
                         stroke="#78350F"
                         strokeWidth="4"
+                        className="svg-morph"
                       />
                       <line
                         x1="285"
@@ -2000,6 +2275,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         y2={auxinActive ? 132 : 102}
                         stroke="#78350F"
                         strokeWidth="4"
+                        className="svg-morph"
                       />
                       {!auxinActive ? (
                         <line
@@ -2054,21 +2330,41 @@ export const ControlCoordinationLab: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
                 <div className="lg:col-span-7 space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    {([1, 2, 3, 4] as SeedStageId[]).map((sid) => (
-                      <button
-                        key={sid}
-                        type="button"
-                        onClick={() => setSeedStage(sid)}
-                        className={`rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
-                          seedStage === sid
-                            ? 'border-emerald-700 bg-emerald-700 text-white'
-                            : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
-                        }`}
-                      >
-                        Stage {sid}
-                      </button>
-                    ))}
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap gap-2">
+                      {([1, 2, 3, 4] as SeedStageId[]).map((sid) => (
+                        <button
+                          key={sid}
+                          type="button"
+                          onClick={() => {
+                            setIsPlayingSeed(false);
+                            setSeedStage(sid);
+                          }}
+                          className={`rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
+                            seedStage === sid
+                              ? 'border-emerald-700 bg-emerald-700 text-white'
+                              : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          Stage {sid}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsPlayingSeed((p) => !p)}
+                      className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      {isPlayingSeed ? (
+                        <>
+                          <Pause className="h-3.5 w-3.5 text-emerald-700" /> Pause Stages
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-3.5 w-3.5 text-emerald-700" /> Animate Stages
+                        </>
+                      )}
+                    </button>
                   </div>
 
                   {/* Interactive Barley Seed SVG */}
@@ -2099,6 +2395,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         stroke="#D97706"
                         strokeWidth="8"
                         strokeDasharray={seedStage >= 3 ? '0' : '6 2'}
+                        className="svg-morph"
                       />
                       <text x="275" y="48" fontSize="11" fontWeight="700" fill="#92400E">
                         Aleurone Layer (Synthesises Amylase)
@@ -2125,7 +2422,7 @@ export const ControlCoordinationLab: React.FC = () => {
                         Embryo
                       </text>
 
-                      {/* Flow arrows */}
+                      {/* Flow arrows + particles */}
                       {seedStage >= 2 && (
                         <>
                           <path
@@ -2133,8 +2430,13 @@ export const ControlCoordinationLab: React.FC = () => {
                             fill="none"
                             stroke="#059669"
                             strokeWidth="3"
-                            className="animate-flow-dash"
+                            className={isPlayingSeed ? 'animate-flow-dash' : ''}
                           />
+                          {isPlayingSeed && (
+                            <circle r="4" fill="#059669" className="bio-particle-motion">
+                              <animateMotion dur="1.2s" repeatCount="indefinite" path="M 136 74 Q 170 42, 200 38" />
+                            </circle>
+                          )}
                           <text x="165" y="42" fontSize="10" fontWeight="700" fill="#047857">
                             GA
                           </text>
@@ -2147,15 +2449,25 @@ export const ControlCoordinationLab: React.FC = () => {
                             fill="none"
                             stroke="#7C3AED"
                             strokeWidth="3"
-                            className="animate-flow-dash"
+                            className={isPlayingSeed ? 'animate-flow-dash' : ''}
                           />
                           <path
                             d="M 215 112 L 146 112"
                             fill="none"
                             stroke="#0284C7"
                             strokeWidth="3"
-                            className="animate-flow-dash"
+                            className={isPlayingSeed ? 'animate-flow-dash' : ''}
                           />
+                          {isPlayingSeed && (
+                            <g className="bio-particle-motion">
+                              <circle r="3.8" fill="#7C3AED">
+                                <animateMotion dur="1.1s" repeatCount="indefinite" path="M 260 40 L 260 80" />
+                              </circle>
+                              <circle r="3.8" fill="#0284C7">
+                                <animateMotion dur="1.2s" begin="0.3s" repeatCount="indefinite" path="M 215 112 L 146 112" />
+                              </circle>
+                            </g>
+                          )}
                           <text x="178" y="130" fontSize="10" fontWeight="700" fill="#0369A1">
                             Maltose
                           </text>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Brain, FlaskConical, Info } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Brain, FlaskConical, Info, Pause, Play } from 'lucide-react';
 
 type NeuroneType = 'sensory' | 'relay' | 'motor' | 'reflex';
 type NeuronePartId =
@@ -172,10 +172,20 @@ const TASTE_STEPS: Record<
 export const NeuronesAndTasteLab: React.FC = () => {
   const [neuroneType, setNeuroneType] = useState<NeuroneType>('sensory');
   const [selectedPart, setSelectedPart] = useState<NeuronePartId>('cell-body');
+  const [isPlayingImpulse, setIsPlayingImpulse] = useState<boolean>(true);
 
   const [tasteMode, setTasteMode] = useState<TasteMode>('salt');
   const [tasteStrength, setTasteStrength] = useState<TasteStrength>('high');
   const [tasteStep, setTasteStep] = useState<TasteStepId>(2);
+  const [isPlayingTaste, setIsPlayingTaste] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (!isPlayingTaste) return;
+    const timer = window.setInterval(() => {
+      setTasteStep((prev) => (prev === 4 ? 1 : ((prev + 1) as TasteStepId)));
+    }, 1700);
+    return () => window.clearInterval(timer);
+  }, [isPlayingTaste]);
 
   const activeNeurone = NEURONE_TYPES[neuroneType];
   const activePart = NEURONE_PARTS[selectedPart];
@@ -198,34 +208,51 @@ export const NeuronesAndTasteLab: React.FC = () => {
             </p>
           </div>
 
-          <div
-            className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1"
-            role="tablist"
-            aria-label="Neurone type selector"
-          >
-            {(
-              [
-                ['sensory', 'Sensory'],
-                ['relay', 'Relay'],
-                ['motor', 'Motor'],
-                ['reflex', 'Reflex Arc'],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                role="tab"
-                aria-selected={neuroneType === id}
-                onClick={() => setNeuroneType(id)}
-                className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  neuroneType === id
-                    ? 'bg-violet-700 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsPlayingImpulse((p) => !p)}
+              className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              {isPlayingImpulse ? (
+                <>
+                  <Pause className="h-3.5 w-3.5 text-violet-700" /> Pause Impulse
+                </>
+              ) : (
+                <>
+                  <Play className="h-3.5 w-3.5 text-violet-700" /> Animate Impulse
+                </>
+              )}
+            </button>
+            <div
+              className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1"
+              role="tablist"
+              aria-label="Neurone type selector"
+            >
+              {(
+                [
+                  ['sensory', 'Sensory'],
+                  ['relay', 'Relay'],
+                  ['motor', 'Motor'],
+                  ['reflex', 'Reflex Arc'],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={neuroneType === id}
+                  onClick={() => setNeuroneType(id)}
+                  className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                    neuroneType === id
+                      ? 'bg-violet-700 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -413,12 +440,25 @@ export const NeuronesAndTasteLab: React.FC = () => {
                     </text>
                   </g>
 
+                  {/* Saltatory conduction arc hops on Sensory Neurone */}
+                  {isPlayingImpulse && (
+                    <g className="bio-particle-motion">
+                      <circle r="6" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="2">
+                        <animateMotion
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          path="M 70 120 Q 128 84, 171 120 Q 214 84, 257 120 Q 318 84, 380 120 Q 452 84, 545 120"
+                        />
+                      </circle>
+                    </g>
+                  )}
+
                   {/* Impulse flow arrow */}
                   <path
                     d="M 85 198 L 555 198"
                     stroke="#059669"
                     strokeWidth="3"
-                    className="animate-flow-dash"
+                    className={isPlayingImpulse ? 'animate-flow-dash' : ''}
                   />
                   <polygon points="550,192 550,204 565,198" fill="#059669" />
                   <text x="320" y="218" textAnchor="middle" fontSize="11" fontWeight="600" fill="#047857">
@@ -513,15 +553,28 @@ export const NeuronesAndTasteLab: React.FC = () => {
                     </text>
                   </g>
 
+                  {/* Slower continuous impulse wave along unmyelinated Relay Neurone */}
+                  {isPlayingImpulse && (
+                    <g className="bio-particle-motion">
+                      <circle r="5.5" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="1.8">
+                        <animateMotion
+                          dur="2.8s"
+                          repeatCount="indefinite"
+                          path="M 120 75 L 215 120 L 455 120 L 525 120"
+                        />
+                      </circle>
+                    </g>
+                  )}
+
                   <path
                     d="M 140 218 L 510 218"
                     stroke="#059669"
                     strokeWidth="3"
-                    className="animate-flow-dash"
+                    className={isPlayingImpulse ? 'animate-flow-dash-slow' : ''}
                   />
                   <polygon points="505,212 505,224 520,218" fill="#059669" />
                   <text x="325" y="236" textAnchor="middle" fontSize="11" fontWeight="600" fill="#047857">
-                    Wholly enclosed within CNS spinal cord / brain
+                    Wholly enclosed within CNS spinal cord / brain (slower continuous conduction)
                   </text>
                 </g>
               )}
@@ -635,11 +688,24 @@ export const NeuronesAndTasteLab: React.FC = () => {
                     <circle cx="566" cy="152" r="5" fill={isSelected('terminals') ? '#D97706' : '#7C3AED'} />
                   </g>
 
+                  {/* Saltatory conduction arc hops on Motor Neurone */}
+                  {isPlayingImpulse && (
+                    <g className="bio-particle-motion">
+                      <circle r="6" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="2">
+                        <animateMotion
+                          dur="1.4s"
+                          repeatCount="indefinite"
+                          path="M 138 120 Q 199 82, 243 120 Q 287 82, 331 120 Q 375 82, 419 120 Q 468 82, 515 120"
+                        />
+                      </circle>
+                    </g>
+                  )}
+
                   <path
                     d="M 150 198 L 545 198"
                     stroke="#059669"
                     strokeWidth="3"
-                    className="animate-flow-dash"
+                    className={isPlayingImpulse ? 'animate-flow-dash' : ''}
                   />
                   <polygon points="540,192 540,204 555,198" fill="#059669" />
                   <text x="340" y="218" textAnchor="middle" fontSize="11" fontWeight="600" fill="#047857">
@@ -709,6 +775,19 @@ export const NeuronesAndTasteLab: React.FC = () => {
                   <text x="322" y="66" textAnchor="middle" fontSize="10.5" fontWeight="700" fill="#4C1D95">
                     CNS (2 Synapses)
                   </text>
+
+                  {/* Sequential reflex arc impulse pulse */}
+                  {isPlayingImpulse && (
+                    <g className="bio-particle-motion">
+                      <circle r="6.5" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="2">
+                        <animateMotion
+                          dur="2.4s"
+                          repeatCount="indefinite"
+                          path="M 75 115 L 555 115"
+                        />
+                      </circle>
+                    </g>
+                  )}
                 </g>
               )}
             </svg>
@@ -812,7 +891,10 @@ export const NeuronesAndTasteLab: React.FC = () => {
               <button
                 key={sid}
                 type="button"
-                onClick={() => setTasteStep(sid)}
+                onClick={() => {
+                  setIsPlayingTaste(false);
+                  setTasteStep(sid);
+                }}
                 className={`rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
                   tasteStep === sid
                     ? 'border-emerald-700 bg-emerald-700 text-white'
@@ -822,6 +904,21 @@ export const NeuronesAndTasteLab: React.FC = () => {
                 Step {sid}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={() => setIsPlayingTaste((p) => !p)}
+              className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              {isPlayingTaste ? (
+                <>
+                  <Pause className="h-3.5 w-3.5 text-emerald-700" /> Pause Steps
+                </>
+              ) : (
+                <>
+                  <Play className="h-3.5 w-3.5 text-emerald-700" /> Animate Steps
+                </>
+              )}
+            </button>
           </div>
 
           <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1">
@@ -922,6 +1019,11 @@ export const NeuronesAndTasteLab: React.FC = () => {
                 <>
                   <circle cx="264" cy="52" r="4.5" fill={tasteMode === 'salt' ? '#F59E0B' : '#8B5CF6'} />
                   <circle cx="277" cy="60" r="4.5" fill={tasteMode === 'salt' ? '#F59E0B' : '#8B5CF6'} />
+                  {isPlayingTaste && (
+                    <circle r="4" fill={tasteMode === 'salt' ? '#F59E0B' : '#8B5CF6'} className="bio-particle-motion">
+                      <animateMotion dur="1.1s" repeatCount="indefinite" path="M 270 42 L 270 76" />
+                    </circle>
+                  )}
                 </>
               )}
               {tasteStep >= 2 && (
@@ -930,8 +1032,13 @@ export const NeuronesAndTasteLab: React.FC = () => {
                     d="M 270 55 L 270 124"
                     stroke={tasteMode === 'salt' ? '#D97706' : '#7C3AED'}
                     strokeWidth="3"
-                    className="animate-flow-dash"
+                    className={isPlayingTaste ? 'animate-flow-dash' : ''}
                   />
+                  {isPlayingTaste && (
+                    <circle r="4" fill={tasteMode === 'salt' ? '#D97706' : '#7C3AED'} className="bio-particle-motion">
+                      <animateMotion dur="1.1s" repeatCount="indefinite" path="M 270 78 L 270 130" />
+                    </circle>
+                  )}
                   <text x="125" y="122" fontSize="10.5" fontWeight="700" fill="#B45309">
                     {tasteMode === 'salt'
                       ? 'Na+ influx → Depolarisation'
@@ -948,6 +1055,7 @@ export const NeuronesAndTasteLab: React.FC = () => {
                 height="18"
                 rx="3"
                 fill={tasteStep >= 3 ? '#DC2626' : '#64748B'}
+                className="svg-morph"
               />
               <text x="320" y="187" fontSize="10" fontWeight="600" fill="#991B1B">
                 V-Gated Ca2+ channel
@@ -958,8 +1066,18 @@ export const NeuronesAndTasteLab: React.FC = () => {
                     d="M 332 178 L 282 186"
                     stroke="#DC2626"
                     strokeWidth="2.5"
-                    className="animate-flow-dash"
+                    className={isPlayingTaste ? 'animate-flow-dash' : ''}
                   />
+                  {isPlayingTaste && (
+                    <g className="bio-particle-motion">
+                      <circle r="3.5" fill="#DC2626">
+                        <animateMotion dur="1.0s" repeatCount="indefinite" path="M 332 178 L 282 186" />
+                      </circle>
+                      <circle r="3.5" fill="#7C3AED">
+                        <animateMotion dur="1.0s" begin="0.3s" repeatCount="indefinite" path="M 270 194 L 270 220" />
+                      </circle>
+                    </g>
+                  )}
                   <circle cx="262" cy="192" r="5" fill="#7C3AED" />
                   <circle cx="278" cy="196" r="5" fill="#7C3AED" />
                   <circle cx="268" cy="216" r="3.5" fill="#7C3AED" />
@@ -979,12 +1097,35 @@ export const NeuronesAndTasteLab: React.FC = () => {
                 Sensory Neurone → Brain
               </text>
               {tasteStep === 4 && tasteStrength !== 'low' && (
-                <path
-                  d="M 315 258 L 495 258"
-                  stroke="#F59E0B"
-                  strokeWidth="3"
-                  className="animate-flow-dash"
-                />
+                <>
+                  <path
+                    d="M 315 258 L 495 258"
+                    stroke="#F59E0B"
+                    strokeWidth="3"
+                    className={isPlayingTaste ? 'animate-flow-dash' : ''}
+                  />
+                  {isPlayingTaste && (
+                    <g className="bio-particle-motion">
+                      <circle r="5" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="1.5">
+                        <animateMotion
+                          dur={tasteStrength === 'high' ? '0.8s' : '1.4s'}
+                          repeatCount="indefinite"
+                          path="M 315 258 L 495 258"
+                        />
+                      </circle>
+                      {tasteStrength === 'high' && (
+                        <circle r="5" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="1.5">
+                          <animateMotion
+                            dur="0.8s"
+                            begin="0.4s"
+                            repeatCount="indefinite"
+                            path="M 315 258 L 495 258"
+                          />
+                        </circle>
+                      )}
+                    </g>
+                  )}
+                </>
               )}
             </svg>
 

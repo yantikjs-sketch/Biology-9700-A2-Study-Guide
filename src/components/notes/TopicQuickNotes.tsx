@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface TopicQuickNotesProps {
-  topicId: 'respiration' | 'photosynthesis' | 'control';
+  topicId: 'respiration' | 'photosynthesis' | 'homeostasis' | 'control';
 }
 
 export const TopicQuickNotes: React.FC<TopicQuickNotesProps> = ({
@@ -117,6 +117,101 @@ export const TopicQuickNotes: React.FC<TopicQuickNotesProps> = ({
                 <span className="font-semibold text-slate-900">Ethanol tolerance:</span>{' '}
                 Root cells tolerate higher ethanol concentrations and produce abundant
                 alcohol dehydrogenase during temporary anoxia.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (topicId === 'homeostasis') {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-xs">
+          <h2 className="text-xl font-semibold text-slate-900">
+            01. Nephron Regions, Mechanisms &amp; Adaptations (9700 Table)
+          </h2>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-sm sm:text-base border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-600">
+                  <th className="py-3 pr-4 font-medium">Region</th>
+                  <th className="py-3 pr-4 font-medium">Primary Process</th>
+                  <th className="py-3 font-medium">Key Mechanism / Adaptation</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Glomerulus &amp; Bowman’s</td>
+                  <td className="py-3.5 pr-4">Ultrafiltration</td>
+                  <td className="py-3.5">
+                    Wider afferent arteriole builds pressure; basement membrane blocks proteins &gt; ~69 kDa; podocyte slits.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">PCT</td>
+                  <td className="py-3.5 pr-4">Selective reabsorption</td>
+                  <td className="py-3.5">
+                    Microvilli + mitochondria; basal Na+/K+ ATPase drives luminal Na+-glucose/amino acid co-transport.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Loop of Henle</td>
+                  <td className="py-3.5 pr-4">Countercurrent multiplier</td>
+                  <td className="py-3.5">
+                    Ascending limb actively pumps Na+/Cl- out (water-impermeable) to create very negative medullary Ψ.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Collecting Duct</td>
+                  <td className="py-3.5 pr-4">Osmoregulation (ADH)</td>
+                  <td className="py-3.5">
+                    ADH triggers cAMP-mediated fusion of aquaporin vesicles into luminal membrane → water leaves by osmosis.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="rounded-xl border border-slate-200/90 bg-white p-6 space-y-3 shadow-xs">
+            <h3 className="text-lg font-semibold text-slate-900">
+              02. Blood Glucose Signalling &amp; Liver Deamination
+            </h3>
+            <ul className="space-y-2.5 text-base leading-relaxed text-slate-700">
+              <li>
+                <span className="font-semibold text-slate-900">Insulin (β-cells):</span>{' '}
+                Increases GLUT4 membrane transporters in muscle/adipose and stimulates glycogenesis (glucose → glycogen).
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Glucagon / Adrenaline:</span>{' '}
+                G-protein → adenylyl cyclase → ATP → cAMP → enzyme amplification cascade → glycogen phosphorylase → glycogenolysis.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Deamination:</span>{' '}
+                Hepatocytes remove -NH2 from excess amino acids → toxic NH3 + CO2 converted to urea CO(NH2)2 via urea cycle.
+              </li>
+            </ul>
+          </div>
+
+          <div className="rounded-xl border border-slate-200/90 bg-white p-6 space-y-3 shadow-xs">
+            <h3 className="text-lg font-semibold text-slate-900">
+              03. Plant Homeostasis: Guard Cells &amp; ABA (14.2)
+            </h3>
+            <ul className="space-y-2.5 text-base leading-relaxed text-slate-700">
+              <li>
+                <span className="font-semibold text-slate-900">Opening (Light):</span>{' '}
+                H+-ATPase pumps H+ out → K+ channels open → K+ influx lowers Ψ → osmosis in → turgid curved guard cells.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Closing (ABA drought):</span>{' '}
+                ABA inhibits H+ pumps &amp; raises cytosolic Ca2+ → K+ efflux raises Ψ → water exits by osmosis → flaccid closed pore.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Wall architecture:</span>{' '}
+                Thicker inner stomatal wall + radial cellulose microfibrils make turgor bend guard cells outward.
               </li>
             </ul>
           </div>
