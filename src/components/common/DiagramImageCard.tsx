@@ -21,20 +21,20 @@ export const DiagramImageCard: React.FC<DiagramImageCardProps> = ({
   const [hasError, setHasError] = useState(false);
 
   return (
-    <div className="flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-4">
+    <div className="flex flex-col rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-4">
       <div className="space-y-1.5">
         <p className="text-sm font-medium text-slate-500">{syllabusTag}</p>
         <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+      <div className="flex items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white p-2">
         {!hasError ? (
           <img
             src={src}
             alt={alt}
             referrerPolicy="no-referrer"
             onError={() => setHasError(true)}
-            className="w-full h-60 sm:h-68 object-cover object-center"
+            className="block w-full h-auto max-h-[360px] object-contain"
           />
         ) : (
           <div className="flex h-60 sm:h-68 w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-slate-100 to-emerald-50 p-6 text-center">
