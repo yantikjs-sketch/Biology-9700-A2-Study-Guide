@@ -456,4 +456,118 @@ export const REVISION_QUESTIONS: RevisionQuestion[] = [
       'In shoots, auxin activates plasma membrane proton pumps to acidify the cell wall; low pH activates expansin enzymes that disrupt H-bonds between cellulose microfibrils, allowing osmotic water entry and turgor pressure to elongate the cell. In barley seeds, water uptake causes the embryo to release gibberellin to the aleurone layer, where GA triggers destruction of DELLA repressor proteins, switching on amylase transcription so stored endosperm starch is hydrolysed to maltose.',
     keyTerms: ['H+-ATPase & expansins', 'Turgor elongation', 'Aleurone & DELLA', 'Amylase transcription'],
   },
+  {
+    id: 'rev-inh-1',
+    topicId: 'inheritance',
+    syllabusRef: '16.1.2–16.1.4 Meiosis & Genetic Variation',
+    commandWord: 'Explain',
+    marks: 4,
+    prompt:
+      'Explain how crossing over in prophase I and independent assortment in metaphase I produce genetically different haploid gametes during meiosis.',
+    hint: 'Mention homologous chromosomes forming bivalents, chiasmata, exchange between non-sister chromatids creating recombinant alleles, random orientation on the equator, and reduction from diploid (2n) to haploid (n).',
+    markSchemePoints: [
+      'In prophase I, homologous chromosomes pair to form bivalents (synapsis); non-sister chromatids cross at chiasmata and exchange corresponding DNA segments (crossing over), producing recombinant allele combinations on chromatids.',
+      'In metaphase I, bivalents line up along the cell equator with random orientation of maternal and paternal homologues facing opposite poles (independent assortment).',
+      'In anaphase I, homologous chromosomes are separated to opposite poles, halving the chromosome number from diploid (2n) to haploid (n).',
+      'Together with random fusion of gametes at fertilisation, this produces vast genetic variation among offspring.',
+    ],
+    modelAnswer:
+      'During prophase I, homologous chromosomes pair as bivalents and non-sister chromatids exchange alleles at chiasmata (crossing over), forming recombinant chromatids. In metaphase I, each bivalent aligns independently on the equator with random orientation of maternal and paternal homologues (independent assortment) before anaphase I separates homologues to halve the chromosome number (2n to n). Combined with random fertilisation, these events generate genetically unique gametes and offspring.',
+    keyTerms: ['Bivalents & chiasmata', 'Non-sister chromatids', 'Independent assortment', 'Haploid (n) gametes'],
+  },
+  {
+    id: 'rev-inh-2',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.1–16.2.2 Sex Linkage (Haemophilia)',
+    commandWord: 'Explain',
+    marks: 3,
+    prompt:
+      'Haemophilia is caused by a recessive allele (h) on the X chromosome (F8 gene). Explain why a male with haemophilia cannot pass the condition to his sons, and show the expected offspring phenotypes if a carrier female (X^H X^h) has children with an unaffected male (X^H Y).',
+    hint: 'State which chromosome a father passes to his sons vs daughters, then list the four gamete genotypes/phenotypes and probability (25% / 50% of sons).',
+    markSchemePoints: [
+      'A father passes his Y chromosome (not his X chromosome) to all of his sons, so a father-to-son transmission of an X-linked allele cannot occur; he passes his X^h allele only to his daughters (making them carriers).',
+      'Gametes from X^H X^h × X^H Y are X^H, X^h and X^H, Y, yielding four equally likely genotypes: X^H X^H, X^H X^h, X^H Y, and X^h Y.',
+      'Phenotypes: 50% unaffected daughters (half X^H X^H, half carrier X^H X^h), 25% unaffected sons (X^H Y), and 25% haemophiliac sons (X^h Y) — i.e., 50% chance any son has haemophilia.',
+    ],
+    modelAnswer:
+      'Fathers pass their Y chromosome to sons and their X chromosome only to daughters, so an affected father cannot transmit an X-linked allele to a son. Crossing a carrier female (X^H X^h) with an unaffected male (X^H Y) gives genotypes X^H X^H (unaffected female), X^H X^h (carrier female), X^H Y (unaffected male), and X^h Y (haemophiliac male) in a 1:1:1:1 ratio — so 25% of all offspring (and 50% of sons) are expected to have haemophilia.',
+    keyTerms: ['Y chromosome to sons', 'No homologous locus on Y', 'Carrier female X^H X^h', '1:1:1:1 phenotype ratio'],
+  },
+  {
+    id: 'rev-inh-3',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.2 Autosomal Linkage & Recombinants',
+    commandWord: 'Explain',
+    marks: 4,
+    prompt:
+      'In a test cross between a doubly heterozygous organism (AaBb) and a homozygous recessive individual (aabb), far more parental phenotypes (AaBb and aabb) are observed than recombinant phenotypes (Aabb and aaBb). Explain these results.',
+    hint: 'Contrast autosomal linkage on the same chromosome with independent assortment (1:1:1:1), and explain how small numbers of recombinants still arise via crossing over.',
+    markSchemePoints: [
+      'The two gene loci (A/a and B/b) are located on the same autosome (autosomal linkage), so alleles A and B (and a and b) are normally inherited together rather than assorting independently.',
+      'Without autosomal linkage, a 1:1:1:1 ratio of all four phenotypes would be expected.',
+      'The small number of recombinant offspring (Aabb and aaBb) arise because crossing over at chiasmata in prophase I occasionally separates the linked loci between non-sister chromatids.',
+      'Because crossing over between two close loci occurs in only a small proportion of meioses, recombinant phenotypes are much rarer than parental phenotypes.',
+    ],
+    modelAnswer:
+      'Genes A/a and B/b are autosomally linked on the same chromosome, so A with B and a with b tend to travel together into gametes instead of assorting independently into a 1:1:1:1 test-cross ratio. Consequently, parental phenotypes (AaBb and aabb) form the large majority of offspring. The rarer recombinant phenotypes (Aabb and aaBb) occur only when crossing over between non-sister chromatids at a chiasma in prophase I separates the two linked loci.',
+    keyTerms: ['Autosomal linkage', 'Inherited together', 'Crossing over at chiasmata', 'Parental vs recombinant'],
+  },
+  {
+    id: 'rev-inh-4',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.2 & 16.2.4 Epistasis & Gene-to-Protein Links',
+    commandWord: 'Explain',
+    marks: 4,
+    prompt:
+      'Explain what is meant by epistasis, using a 9:3:4 dihybrid F2 ratio to illustrate recessive epistasis, AND explain how a mutation in the TYR gene causes albinism.',
+    hint: 'Define interaction between two gene loci (one masking another), show biochemical pathway steps for 9:3:4, then link TYR -> tyrosinase -> tyrosine to DOPA/melanin.',
+    markSchemePoints: [
+      'Epistasis occurs when alleles at one gene locus mask or modify the phenotypic expression of alleles at a second gene locus (often coding for consecutive enzymes in a metabolic pathway).',
+      'In recessive epistasis (9:3:4), a homozygous recessive genotype at the first locus (e.g. aa) blocks an early pathway step, masking whatever alleles (B or b) are present at the second locus so aaB- and aabb share the same phenotype (3 + 1 = 4).',
+      'The TYR gene codes for the enzyme tyrosinase, which converts the amino acid tyrosine into DOPA and dopaquinone on the pathway to melanin pigment.',
+      'A recessive mutation produces inactive/absent tyrosinase, so no melanin is synthesised in skin, hair, and iris cells (albinism).',
+    ],
+    modelAnswer:
+      'Epistasis is the interaction between different gene loci where the allele at one locus masks or modifies expression of another locus. In recessive epistasis (9:3:4 F2 ratio), being homozygous recessive at the epistatic locus (aa) halts an upstream step in a biochemical pathway, so aaB- and aabb produce the same end phenotype (combining the 3 and 1 classes into 4). Similarly, the TYR gene encodes tyrosinase; a recessive loss-of-function mutation prevents conversion of tyrosine to DOPA and melanin, resulting in albinism.',
+    keyTerms: ['Gene locus interaction', 'Recessive epistasis 9:3:4', 'TYR encodes tyrosinase', 'Melanin pathway blocked'],
+  },
+  {
+    id: 'rev-inh-5',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.3 Chi-Squared (χ²) Statistical Test',
+    commandWord: 'Calculate',
+    marks: 4,
+    prompt:
+      'An F2 cross expected to give a 9:3:3:1 ratio produces 160 offspring: 98, 28, 26, and 8. Calculate the chi-squared (χ²) value and explain whether the null hypothesis should be accepted or rejected at p = 0.05 (critical value at df = 3 is 7.815).',
+    hint: 'First compute expected numbers for 160 in 9:3:3:1 (90, 30, 30, 10), then apply Σ(O−E)²/E, determine df = n − 1 = 3, and compare χ² to 7.815.',
+    markSchemePoints: [
+      'Expected numbers (9:3:3:1 of 160): E = 90, 30, 30, 10.',
+      'Calculate (O − E)² / E for each class: (98−90)²/90 = 64/90 = 0.711; (28−30)²/30 = 4/30 = 0.133; (26−30)²/30 = 16/30 = 0.533; (8−10)²/10 = 4/10 = 0.400.',
+      'Sum χ² = 0.711 + 0.133 + 0.533 + 0.400 = 1.78 (1.778); degrees of freedom df = 4 − 1 = 3.',
+      'Since 1.78 < 7.815 (p > 0.05), there is no statistically significant difference between observed and expected results; deviations are due to chance alone, so accept the null hypothesis.',
+    ],
+    modelAnswer:
+      'Expected values for 160 offspring in a 9:3:3:1 ratio are 90, 30, 30, and 10. Using χ² = Σ(O − E)²/E = 64/90 + 4/30 + 16/30 + 4/10 = 0.711 + 0.133 + 0.533 + 0.400 = 1.78. With df = 4 − 1 = 3 and p = 0.05, the critical value is 7.815. Because 1.78 < 7.815 (p > 0.05), the difference between observed and expected numbers is not statistically significant and is due to chance alone, so the null hypothesis is accepted.',
+    keyTerms: ['E = 90, 30, 30, 10', 'χ² = 1.78', 'df = n − 1 = 3', '1.78 < 7.815 (accept H0)'],
+  },
+  {
+    id: 'rev-inh-6',
+    topicId: 'inheritance',
+    syllabusRef: '16.3.1–16.3.4 Gene Control: lac Operon & Gibberellin',
+    commandWord: 'Explain',
+    marks: 4,
+    prompt:
+      'Explain how the presence of lactose switches on transcription of the structural genes in the E. coli lac operon, and contrast this with how gibberellin activates transcription in plant cells.',
+    hint: 'Include lacI repressor, operator (O), allolactose inducer, conformational change, RNA polymerase binding promoter (P), lacZ/lacY, and for plants mention DELLA degradation freeing transcription factors.',
+    markSchemePoints: [
+      'The regulatory gene lacI codes for a repressor protein; when lactose is absent, the repressor binds the operator (O), blocking RNA polymerase from transcribing the structural genes.',
+      'When lactose is present, allolactose acts as an inducer and binds to the repressor protein, changing its tertiary shape so it can no longer bind the operator.',
+      'RNA polymerase binds the promoter (P) and transcribes structural genes lacZ (β-galactosidase), lacY (lactose permease), and lacA into mRNA.',
+      'In eukaryotes (barley aleurone cells), gibberellin binds its receptor and causes breakdown of DELLA repressor proteins, releasing transcription factors (e.g. PIF) to bind promoters and switch on amylase gene transcription.',
+    ],
+    modelAnswer:
+      'In E. coli, the regulatory gene lacI produces a repressor protein that normally binds the operator (O) to block RNA polymerase. When lactose enters the cell, allolactose binds the repressor as an inducer, altering its shape so it detaches from the operator; RNA polymerase then binds the promoter (P) and transcribes lacZ, lacY, and lacA (producing β-galactosidase and lactose permease). In eukaryotes such as barley aleurone cells, gibberellin instead triggers ubiquitin-mediated breakdown of DELLA repressor proteins, freeing transcription factors to activate amylase gene transcription.',
+    keyTerms: ['Allolactose inducer', 'Operator & promoter', 'lacZ (β-galactosidase)', 'DELLA breakdown'],
+  },
 ];
+

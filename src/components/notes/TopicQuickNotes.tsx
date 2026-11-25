@@ -1,12 +1,155 @@
 import React from 'react';
 
+import { ChapterTopicId } from '../../types/syllabus';
+
 interface TopicQuickNotesProps {
-  topicId: 'respiration' | 'photosynthesis' | 'homeostasis' | 'control';
+  topicId: ChapterTopicId;
 }
 
 export const TopicQuickNotes: React.FC<TopicQuickNotesProps> = ({
   topicId,
 }) => {
+  if (topicId === 'inheritance') {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-xs">
+          <h2 className="text-xl font-semibold text-slate-900">
+            01. Inheritance Ratios, Linkage, Epistasis &amp; Chi-Squared (9700 Summary)
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Key expected phenotypic ratios and statistical interpretations for Topic 16.2–16.3.
+          </p>
+
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-sm sm:text-base border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-600">
+                  <th className="py-3 pr-4 font-medium">Genetic Cross / Mechanism</th>
+                  <th className="py-3 pr-4 font-medium">Expected Ratio</th>
+                  <th className="py-3 font-medium">9700 Biological Explanation</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Monohybrid F2 (Aa × Aa)</td>
+                  <td className="py-3.5 pr-4 font-mono tabular-nums text-amber-800">
+                    3 : 1
+                  </td>
+                  <td className="py-3.5 text-slate-600">
+                    Complete dominance at one autosomal locus; 1:2:1 genotypic ratio.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Codominance F2 (C^R C^W × C^R C^W)</td>
+                  <td className="py-3.5 pr-4 font-mono tabular-nums text-amber-800">
+                    1 : 2 : 1
+                  </td>
+                  <td className="py-3.5 text-slate-600">
+                    Both alleles expressed equally in heterozygote (e.g. I^A I^B blood group).
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Dihybrid F2 (unlinked AaBb × AaBb)</td>
+                  <td className="py-3.5 pr-4 font-mono tabular-nums text-amber-800">
+                    9 : 3 : 3 : 1
+                  </td>
+                  <td className="py-3.5 text-slate-600">
+                    Two unlinked gene loci assorting independently in metaphase I.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Dihybrid Test Cross (unlinked AaBb × aabb)</td>
+                  <td className="py-3.5 pr-4 font-mono tabular-nums text-amber-800">
+                    1 : 1 : 1 : 1
+                  </td>
+                  <td className="py-3.5 text-slate-600">
+                    Equal parental and recombinant gametes when loci are on different chromosomes.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Autosomal Linkage (AaBb × aabb)</td>
+                  <td className="py-3.5 pr-4 font-mono tabular-nums text-amber-800">
+                    Excess parental · few recombinants
+                  </td>
+                  <td className="py-3.5 text-slate-600">
+                    Loci on same autosome inherited together; rare recombinants arise by crossing over at chiasmata.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Recessive Epistasis (F2)</td>
+                  <td className="py-3.5 pr-4 font-mono tabular-nums text-amber-800">
+                    9 : 3 : 4
+                  </td>
+                  <td className="py-3.5 text-slate-600">
+                    Homozygous recessive aa masks alleles B/b at a downstream locus.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 pr-4 font-medium">Dominant Epistasis / Complementary</td>
+                  <td className="py-3.5 pr-4 font-mono tabular-nums text-amber-800">
+                    12 : 3 : 1 &nbsp;|&nbsp; 9 : 7
+                  </td>
+                  <td className="py-3.5 text-slate-600">
+                    Dominant allele A masks B/b (12:3:1); both A and B required for final product (9:7).
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="rounded-xl border border-slate-200/90 bg-white p-6 space-y-3 shadow-xs">
+            <h3 className="text-lg font-semibold text-slate-900">
+              02. Meiosis, Chi-Squared (χ²) &amp; Named 9700 Genes
+            </h3>
+            <div className="space-y-2.5 text-base leading-relaxed text-slate-700">
+              <p>
+                <span className="font-semibold text-slate-900">Meiosis I vs II:</span>{' '}
+                Meiosis I separates homologous chromosomes (2n → n; crossing over in prophase I,
+                independent assortment in metaphase I). Meiosis II separates sister chromatids.
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">χ² = Σ(O − E)² / E:</span>{' '}
+                Use df = n − 1 at p = 0.05. If χ² &lt; critical value, accept H0 (chance alone);
+                if χ² ≥ critical value, reject H0 (significant difference, e.g. linkage).
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">Genes → Proteins (16.2.4):</span>{' '}
+                TYR (tyrosinase → melanin; albinism), HBB (β-globin; sickle cell), F8 (Factor VIII;
+                haemophilia), HTT (huntingtin; dominant Huntington&apos;s), LE (GA3 oxidase → stem height).
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200/90 bg-white p-6 space-y-3 shadow-xs">
+            <h3 className="text-lg font-semibold text-slate-900">
+              03. Gene Control: lac Operon &amp; Transcription Factors (16.3)
+            </h3>
+            <ul className="space-y-2.5 text-base leading-relaxed text-slate-700">
+              <li>
+                <span className="font-semibold text-slate-900">Structural vs regulatory genes:</span>{' '}
+                Structural genes code for metabolic/structural polypeptides (lacZ, lacY, lacA);
+                regulatory genes (lacI) code for proteins controlling expression of other genes.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">lac operon (inducible enzyme):</span>{' '}
+                Lactose absent → lacI repressor binds operator (O), blocking RNA polymerase. Lactose
+                present → allolactose binds repressor, releasing O so lacZ (β-galactosidase) &amp;
+                lacY (permease) are transcribed.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Eukaryotic GA &amp; DELLA:</span>{' '}
+                Gibberellin binds receptor and promotes destruction of DELLA repressor proteins,
+                freeing transcription factors (PIF) to switch on amylase transcription in barley seeds.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (topicId === 'respiration') {
     return (
       <div className="space-y-6">

@@ -5,7 +5,7 @@ export const A2_SYLLABUS_MODULES: SyllabusModuleMeta[] = [
     id: 'respiration',
     code: '12',
     title: 'Energy and Respiration',
-    shortLabel: '12. Respiration',
+    shortLabel: '12. Energy and Respiration',
     status: 'active',
     summary:
       'ATP synthesis, glycolysis, link reaction, Krebs cycle, oxidative phosphorylation, anaerobic pathways, and respiratory quotients (RQ).',
@@ -54,7 +54,7 @@ export const A2_SYLLABUS_MODULES: SyllabusModuleMeta[] = [
     id: 'control',
     code: '15',
     title: 'Control and Coordination',
-    shortLabel: '15. Control',
+    shortLabel: '15. Control and Coordination',
     status: 'active',
     summary:
       'Nervous & endocrine communication, sensory/relay/motor neurones, taste chemoreceptors, resting and action potentials, cholinergic synapses, striated muscle sliding filament model, Venus flytrap closure, and auxin/gibberellin regulation.',
@@ -69,15 +69,16 @@ export const A2_SYLLABUS_MODULES: SyllabusModuleMeta[] = [
   {
     id: 'inheritance',
     code: '16',
-    title: 'Inheritance',
+    title: 'Inherited Change',
     shortLabel: '16. Inheritance',
-    status: 'planned',
+    status: 'active',
     summary:
-      'Meiosis, crossing over, chi-squared genetic ratios, epistasis, autosomal linkage, lac operon gene control, and transcription factors.',
+      'Meiosis I & II, crossing over, independent assortment, monohybrid/dihybrid crosses, codominance, sex & autosomal linkage, epistasis, chi-squared (χ²) tests, lac operon, and eukaryotic transcription factors.',
     subtopics: [
-      '16.1 Passage of information from parents to offspring',
-      '16.2 Roles of genes in determining phenotype & chi-squared',
-      '16.3 Gene control in prokaryotes (lac operon) & eukaryotes',
+      '16.1 Meiosis I & II, crossing over (chiasmata) & genetic variation',
+      '16.2 Genetic diagrams, linkage, epistasis & chi-squared (χ²) test',
+      '16.2 Genes, proteins & phenotype (TYR, HBB, F8, HTT, LE)',
+      '16.3 Prokaryotic lac operon & eukaryotic transcription factors (DELLA)',
     ],
     accentColor: '#B45309',
   },
@@ -954,5 +955,199 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     markSchemeExplanation:
       'Water stress stimulates ABA synthesis. ABA binds receptors on guard cell plasma membranes, inhibiting proton pumps and raising cytosolic [Ca2+]. This second messenger opens K+ (and Cl-) efflux channels; K+ exits, raising guard cell water potential (Ψ), so water moves out by osmosis and flaccid guard cells close the pore.',
     keyTerms: ['Abscisic acid (ABA)', 'Ca2+ second messenger', 'K+ efflux', 'Flaccid guard cells'],
+  },
+
+  // TOPIC 16: INHERITED CHANGE
+  {
+    id: 'inh-1',
+    topicId: 'inheritance',
+    syllabusRef: '16.1.2 Meiosis & Genetic Variation',
+    difficulty: 'Core Recall',
+    prompt:
+      'During which two stages of Meiosis I are genetically distinct combinations of alleles first generated within a diploid cell?',
+    options: [
+      'Prophase I (crossing over at chiasmata between non-sister chromatids) and Metaphase I (independent assortment of homologous chromosome pairs)',
+      'Anaphase II (separation of sister chromatids) and Telophase II (cytokinesis)',
+      'Interphase (DNA replication by DNA polymerase) and Prophase II',
+      'Telophase I and Metaphase II (alignment of individual chromosomes)',
+    ],
+    correctIndex: 0,
+    hint: 'Think about when homologous chromosomes pair as bivalents to swap segments and when bivalents orient randomly at the spindle equator.',
+    markSchemeExplanation:
+      'In Prophase I, homologous chromosomes pair to form bivalents and non-sister chromatids exchange alleles at chiasmata (crossing over), creating recombinant chromatids. In Metaphase I, homologous pairs align independently at the equator (independent assortment), randomly separating maternal and paternal chromosomes in Anaphase I.',
+    keyTerms: ['Prophase I', 'Chiasmata / crossing over', 'Metaphase I', 'Independent assortment'],
+  },
+  {
+    id: 'inh-2',
+    topicId: 'inheritance',
+    syllabusRef: '16.1.1 Haploid, Diploid & Meiosis II',
+    difficulty: 'Core Recall',
+    prompt:
+      'Why is Meiosis I described as a reduction division, and what separates during Anaphase II?',
+    options: [
+      'Meiosis I halves chromosome number from 2n to n by separating homologous chromosomes; Anaphase II separates sister chromatids at the centromere',
+      'Meiosis I separates sister chromatids; Anaphase II separates homologous bivalents',
+      'Meiosis I doubles DNA content to 4n without cell division; Anaphase II halves it to 2n',
+      'Both Meiosis I and Meiosis II separate homologous chromosomes to produce diploid gametes',
+    ],
+    correctIndex: 0,
+    hint: 'Count how many chromosomes (not chromatids) are in each daughter cell at the end of Telophase I vs Telophase II.',
+    markSchemeExplanation:
+      'Meiosis I separates homologous chromosomes into two haploid (n) nuclei (reduction division, 2n → n), though each chromosome still consists of two sister chromatids. In Meiosis II, centromeres divide and sister chromatids separate in Anaphase II to produce four haploid (n) gametes.',
+    keyTerms: ['Reduction division (2n → n)', 'Homologous chromosomes', 'Sister chromatids', 'Centromere'],
+  },
+  {
+    id: 'inh-3',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.1 Codominance & Multiple Alleles',
+    difficulty: 'Application & Data',
+    prompt:
+      'A mother with blood group A (genotype I^A I^O) and a father with blood group B (genotype I^B I^O) have a child. What blood groups and phenotypic ratio are expected in their offspring?',
+    options: [
+      '100% blood group AB because I^A and I^B are both dominant over I^O',
+      'AB, A, B, and O in a 1 : 1 : 1 : 1 ratio',
+      '3 AB : 1 O',
+      '1 A : 2 AB : 1 B',
+    ],
+    correctIndex: 1,
+    hint: 'I^A and I^B are codominant with each other, and both are dominant over the recessive allele I^O.',
+    markSchemeExplanation:
+      'Mother gametes: I^A and I^O. Father gametes: I^B and I^O. Offspring genotypes are I^A I^B (group AB), I^A I^O (group A), I^B I^O (group B), and I^O I^O (group O) in equal 1 : 1 : 1 : 1 proportions.',
+    keyTerms: ['Codominance', 'Multiple alleles', 'I^A I^B', '1:1:1:1 ratio'],
+  },
+  {
+    id: 'inh-4',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.2 Sex Linkage (X-linked)',
+    difficulty: 'Application & Data',
+    prompt:
+      'Haemophilia is caused by a recessive allele (X^h) on the X chromosome (defective Factor VIII). Why do males express haemophilia far more frequently than females, and can an affected father pass haemophilia directly to his son?',
+    options: [
+      'Males have only one X chromosome (hemizygous) so a single X^h allele is expressed; an affected father passes his Y chromosome to his son, never his X^h allele',
+      'Males inherit two X^h chromosomes from their father; an affected father passes X^h to 50% of his sons',
+      'The Y chromosome carries a dominant haemophilia allele that masks X^H',
+      'Females never inherit X^h because it is lethal in XX zygotes',
+    ],
+    correctIndex: 0,
+    hint: 'Consider which sex chromosome a father transmits to a son versus to a daughter.',
+    markSchemeExplanation:
+      'The Y chromosome is much shorter and lacks the Factor VIII locus. A male (XY) needs only one recessive X^h allele from his mother to express haemophilia, whereas a female (XX) must inherit X^h from both parents. Fathers give sons a Y chromosome, so male-to-male transmission of an X-linked trait is impossible.',
+    keyTerms: ['X-linked recessive', 'Hemizygous XY', 'Factor VIII', 'No father-to-son transmission'],
+  },
+  {
+    id: 'inh-5',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.3 Autosomal Linkage & Crossing Over',
+    difficulty: 'Application & Data',
+    contextNote: 'Test cross of AaBb × aabb yields: 410 A_B_, 402 aabb, 96 A_bb, 92 aaB_.',
+    prompt:
+      'Why do the offspring numbers above deviate sharply from the expected 1 : 1 : 1 : 1 dihybrid test-cross ratio?',
+    options: [
+      'The two gene loci are on the same autosome (autosomal linkage), so parental allele combinations (AB and ab) are mostly inherited together while rare recombinants (Ab, aB) arise only from crossing over in Prophase I',
+      'Allele A is epistatic over B, masking both recessive phenotypes',
+      'The cross shows lethal alleles killing 75% of homozygous dominant zygotes',
+      'The two genes assort completely independently on non-homologous chromosomes',
+    ],
+    correctIndex: 0,
+    hint: 'Compare the frequency of parental phenotypes (812) vs recombinant phenotypes (188) out of 1000 offspring.',
+    markSchemeExplanation:
+      'Unlinked dihybrid test crosses give 1 : 1 : 1 : 1 (250 each). Because genes A and B are closely linked on the same autosome, homologous chromatids mostly stay together during meiosis, producing large parental classes (410 + 402 = 812) and smaller recombinant classes (96 + 92 = 188) only when chiasmata form between the two loci.',
+    keyTerms: ['Autosomal linkage', 'Parental phenotypes', 'Recombinant gametes', 'Crossing over'],
+  },
+  {
+    id: 'inh-6',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.4 Epistasis',
+    difficulty: 'Application & Data',
+    prompt:
+      'In sweet peas, two unlinked genes C/c and P/p control flower colour: purple pigment forms ONLY when at least one dominant C and one dominant P allele are present (C_P_); all other genotypes (C_pp, ccP_, ccpp) are white. Crossing CcPp × CcPp yields what F2 phenotypic ratio?',
+    options: [
+      '9 purple : 3 pink : 4 white',
+      '9 purple : 7 white (complementary gene interaction / duplicate recessive epistasis)',
+      '12 purple : 3 pink : 1 white',
+      '9 : 3 : 3 : 1',
+    ],
+    correctIndex: 1,
+    hint: 'In a standard 9 : 3 : 3 : 1 dihybrid Punnett square, group the three classes lacking at least one dominant allele.',
+    markSchemeExplanation:
+      'Both enzyme steps require a functional dominant allele (C_ and P_). Out of 16 F2 combinations: 9/16 are C_P_ (purple), while 3/16 C_pp + 3/16 ccP_ + 1/16 ccpp = 7/16 fail to complete the pigment pathway and remain white, giving a modified 9 : 7 dihybrid ratio.',
+    keyTerms: ['Epistasis', '9 : 7 ratio', 'Complementary genes', 'Biochemical pathway'],
+  },
+  {
+    id: 'inh-7',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.5 Chi-Squared (χ²) Test',
+    difficulty: 'Application & Data',
+    contextNote: 'A monohybrid F2 cross (expected 3:1) gives Observed: 78 purple, 22 white (Total = 100). Critical χ² at df = 1, p = 0.05 is 3.84.',
+    prompt:
+      'Calculate the χ² value for this cross and state the correct statistical conclusion.',
+    options: [
+      'χ² = 0.48; since 0.48 < 3.84 (p > 0.05), fail to reject the null hypothesis — the difference between observed and expected is not significant and is due to chance',
+      'χ² = 0.48; reject the null hypothesis because 0.48 is greater than 0.05',
+      'χ² = 4.20; reject the null hypothesis — the genes are autosomally linked',
+      'χ² = 1.92; degrees of freedom = 2, so the data are invalid',
+    ],
+    correctIndex: 0,
+    hint: 'Expected = 75 purple and 25 white. χ² = (78 − 75)²/75 + (22 − 25)²/25.',
+    markSchemeExplanation:
+      'Expected 3:1 out of 100 gives E = 75 purple and 25 white. χ² = (3)²/75 + (-3)²/25 = 9/75 + 9/25 = 0.12 + 0.36 = 0.48. With df = 2 − 1 = 1, 0.48 is far below the p = 0.05 critical value (3.84), so there is no significant difference between O and E (deviation is due to chance; null hypothesis accepted).',
+    keyTerms: ['χ² = Σ(O−E)²/E', 'df = n − 1', 'p > 0.05 (due to chance)', 'Null hypothesis'],
+  },
+  {
+    id: 'inh-8',
+    topicId: 'inheritance',
+    syllabusRef: '16.2.6 Genes, Proteins & Phenotype (LE Gene)',
+    difficulty: 'Core Recall',
+    prompt:
+      'In Mendel’s pea plants, how does the dominant Le allele produce tall stems compared with homozygous recessive le/le dwarf plants?',
+    options: [
+      'Le codes for a functional enzyme (GA 3-oxidase) that converts inactive gibberellin GA20 into active GA1, stimulating internode elongation',
+      'Le codes for tyrosinase, producing auxin directly in root tips',
+      'Le codes for lactase permease to transport sucrose into stem xylem',
+      'le codes for a dominant repressor that destroys chlorophyll in tall plants',
+    ],
+    correctIndex: 0,
+    hint: 'Remember the 9700 link between the Le gene in peas and active gibberellin (GA1) synthesis.',
+    markSchemeExplanation:
+      'The dominant Le allele encodes a functional enzyme (gibberellin 3β-hydroxylase / GA 3-oxidase) that converts inactive GA20 precursor into biologically active GA1, promoting stem internode elongation. The recessive le allele has a point mutation producing a non-functional enzyme, leaving le/le plants deficient in GA1 (dwarf).',
+    keyTerms: ['Le / le alleles', 'GA20 → GA1', 'Functional enzyme', 'Internode elongation'],
+  },
+  {
+    id: 'inh-9',
+    topicId: 'inheritance',
+    syllabusRef: '16.3.1 Prokaryotic lac Operon',
+    difficulty: 'Core Recall',
+    prompt:
+      'In Escherichia coli, what happens at the lac operon when lactose is ABSENT from the growth medium?',
+    options: [
+      'Allolactose binds the repressor protein, allowing RNA polymerase to transcribe lacZ, lacY, and lacA',
+      'The regulatory gene lacI produces an active repressor protein that binds to the operator (O), blocking RNA polymerase from transcribing lacZ, lacY, and lacA',
+      'RNA polymerase binds directly to lacI and digests the operator sequence',
+      'β-galactosidase is continuously synthesised to prevent glucose uptake',
+    ],
+    correctIndex: 1,
+    hint: 'Without lactose (inducer), the lac repressor protein stays in its DNA-binding conformation.',
+    markSchemeExplanation:
+      'The regulatory gene lacI is constitutively expressed to produce active lac repressor protein. When lactose is absent, the repressor binds the operator (O), physically blocking RNA polymerase at the promoter (P) from transcribing structural genes lacZ, lacY, and lacA—conserving ATP and amino acids.',
+    keyTerms: ['lacI regulatory gene', 'Active repressor', 'Operator (O)', 'RNA polymerase blocked'],
+  },
+  {
+    id: 'inh-10',
+    topicId: 'inheritance',
+    syllabusRef: '16.3.2 Eukaryotic Transcription Factors',
+    difficulty: 'Application & Data',
+    prompt:
+      'How do eukaryotic transcription factors and gibberellin (via DELLA proteins) regulate gene expression in plant cells?',
+    options: [
+      'Transcription factors bind specific DNA sequences (promoters/enhancers) to stimulate or inhibit RNA polymerase binding; gibberellin triggers breakdown of DELLA repressor proteins, freeing transcription factors (PIF) to switch on amylase transcription',
+      'Transcription factors act as ribosomes in the cytoplasm to translate mRNA faster without binding DNA',
+      'DELLA proteins bind directly to ribosomes on the rough ER to digest mRNA',
+      'Eukaryotes group amylase and cellulase into a single prokaryotic-style operon with an operator',
+    ],
+    correctIndex: 0,
+    hint: 'Connect general transcription factor DNA-binding with the gibberellin–DELLA mechanism from 15.2 & 16.3.',
+    markSchemeExplanation:
+      'Eukaryotic transcription factors bind specific promoter/enhancer DNA motifs to recruit or block RNA polymerase II. In aleurone cells, DELLA proteins normally bind and inhibit transcription factors (like PIF); gibberellin binding triggers DELLA degradation, freeing transcription factors to initiate amylase gene transcription.',
+    keyTerms: ['Transcription factor', 'Promoter DNA binding', 'DELLA repressor', 'RNA polymerase'],
   },
 ];

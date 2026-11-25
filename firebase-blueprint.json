@@ -102,7 +102,7 @@
         },
         "topicId": {
           "type": "string",
-          "enum": ["respiration", "photosynthesis", "homeostasis", "control"],
+          "enum": ["respiration", "photosynthesis", "homeostasis", "control", "inheritance"],
           "description": "Chapter identifier for this revision question set."
         },
         "responses": {

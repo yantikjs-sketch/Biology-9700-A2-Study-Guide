@@ -2,7 +2,8 @@ export type ChapterTopicId =
   | 'respiration'
   | 'photosynthesis'
   | 'homeostasis'
-  | 'control';
+  | 'control'
+  | 'inheritance';
 
 export type TopicId = ChapterTopicId | 'roadmap';
 

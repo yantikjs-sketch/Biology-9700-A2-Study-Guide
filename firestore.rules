@@ -84,7 +84,7 @@ service cloud.firestore {
         && data.ownerId.matches('^[a-zA-Z0-9_\\-]+$')
         && data.ownerId == request.auth.uid
         && data.topicId is string
-        && data.topicId in ['respiration', 'photosynthesis', 'homeostasis', 'control']
+        && data.topicId in ['respiration', 'photosynthesis', 'homeostasis', 'control', 'inheritance']
         && data.topicId == topicId
         && data.responses is map
         && data.responses.size() <= 30

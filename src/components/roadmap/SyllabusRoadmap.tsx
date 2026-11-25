@@ -37,7 +37,7 @@ export const SyllabusRoadmap: React.FC<SyllabusRoadmapProps> = ({
         </h1>
         <p className="mt-2 max-w-2xl text-base leading-relaxed text-slate-700">
           Each A2 topic lives in its own dedicated tab with interactive diagrams and
-          exam-style quizzes. Topics 12, 13, 14, and 15 are live below; Topics 16–19
+          exam-style quizzes. Topics 12, 13, 14, 15, and 16 are live below; Topics 17–19
           are structured as ready-to-activate syllabus slots as you expand your revision deck.
         </p>
       </div>

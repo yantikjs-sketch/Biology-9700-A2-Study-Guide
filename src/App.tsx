@@ -4,6 +4,7 @@ import { RespirationLab } from './components/respiration/RespirationLab';
 import { PhotosynthesisLab } from './components/photosynthesis/PhotosynthesisLab';
 import { HomeostasisLab } from './components/homeostasis/HomeostasisLab';
 import { ControlCoordinationLab } from './components/control/ControlCoordinationLab';
+import { InheritanceLab } from './components/inheritance/InheritanceLab';
 import { PracticeQuiz } from './components/quiz/PracticeQuiz';
 import { RevisionQuestionsPanel } from './components/quiz/RevisionQuestionsPanel';
 import { SyllabusRoadmap } from './components/roadmap/SyllabusRoadmap';
@@ -25,6 +26,7 @@ const CHAPTER_TOPICS: ChapterTopicId[] = [
   'photosynthesis',
   'homeostasis',
   'control',
+  'inheritance',
 ];
 
 function getUserStorageKey(uid?: string) {
@@ -287,7 +289,8 @@ export default function App() {
       activeTab === 'respiration' ||
       activeTab === 'photosynthesis' ||
       activeTab === 'homeostasis' ||
-      activeTab === 'control'
+      activeTab === 'control' ||
+      activeTab === 'inheritance'
     ) {
       return QUIZ_QUESTIONS.filter((q) => q.topicId === activeTab);
     }
@@ -299,7 +302,8 @@ export default function App() {
       activeTab === 'respiration' ||
       activeTab === 'photosynthesis' ||
       activeTab === 'homeostasis' ||
-      activeTab === 'control'
+      activeTab === 'control' ||
+      activeTab === 'inheritance'
     ) {
       return REVISION_QUESTIONS.filter((q) => q.topicId === activeTab);
     }
@@ -355,7 +359,7 @@ export default function App() {
           {/* Zone 2: Concise single-line Topic Tabs */}
           <nav
             aria-label="A2 Biology 9700 syllabus topics"
-            className="flex items-center gap-6 sm:gap-8 overflow-x-auto text-base font-medium"
+            className="flex items-center gap-4 sm:gap-5 overflow-x-auto text-sm sm:text-base font-medium"
           >
             <button
               type="button"
@@ -366,7 +370,7 @@ export default function App() {
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              12. Respiration
+              12. Energy and Respiration
             </button>
             <button
               type="button"
@@ -399,7 +403,18 @@ export default function App() {
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              15. Control
+              15. Control and Coordination
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('inheritance')}
+              className={`whitespace-nowrap shrink-0 border-b-2 py-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${
+                activeTab === 'inheritance'
+                  ? 'border-amber-700 text-amber-700 font-semibold'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              16. Inheritance
             </button>
             <button
               type="button"
@@ -477,7 +492,8 @@ export default function App() {
         {(activeTab === 'respiration' ||
           activeTab === 'photosynthesis' ||
           activeTab === 'homeostasis' ||
-          activeTab === 'control') && (
+          activeTab === 'control' ||
+          activeTab === 'inheritance') && (
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200/90 bg-white/95 px-4 py-3 shadow-xs">
             <div
               className="flex flex-wrap items-center gap-1 rounded-lg bg-slate-100 p-1"
@@ -711,6 +727,45 @@ export default function App() {
             </>
           )}
 
+          {activeTab === 'inheritance' && (
+            <>
+              {topicMode === 'diagrams' && <InheritanceLab />}
+              {topicMode === 'revision' && (
+                <RevisionQuestionsPanel
+                  subtitle="Chapter 16 · Cambridge 9700 Paper 4 Structured Revision"
+                  title="Inherited Change — Revision Questions"
+                  questions={activeTopicRevisionQuestions}
+                  responses={revisionResponses}
+                  submittedMap={revisionSubmittedMap}
+                  onChangeResponse={handleChangeRevisionResponse}
+                  onSubmitQuestion={(qId) =>
+                    handleSubmitRevisionQuestion('inheritance', qId)
+                  }
+                  onSubmitAllDrafted={(qIds) =>
+                    handleSubmitAllRevisionDrafted('inheritance', qIds)
+                  }
+                  onResetQuestion={(qId) =>
+                    handleResetRevisionQuestion('inheritance', qId)
+                  }
+                  onResetAll={(qIds) =>
+                    handleResetAllRevision('inheritance', qIds)
+                  }
+                />
+              )}
+              {topicMode === 'quiz' && (
+                <PracticeQuiz
+                  title="Topic 16: Inherited Change — 9700 Practice Quiz"
+                  questions={activeTopicQuestions}
+                  answeredMap={answeredMap}
+                  onAnswerQuestion={handleAnswerQuestion}
+                  onAnswerBatch={handleAnswerBatch}
+                  onResetTopicQuiz={handleResetQuizIds}
+                />
+              )}
+              {topicMode === 'notes' && <TopicQuickNotes topicId="inheritance" />}
+            </>
+          )}
+
           {activeTab === 'roadmap' && (
             <SyllabusRoadmap
               answeredMap={answeredMap}
@@ -722,14 +777,14 @@ export default function App() {
             <div className="space-y-4">
               <div className="border-b border-slate-300/70 pb-4">
                 <p className="text-sm font-medium text-slate-600">
-                  Topics 12, 13, 14 &amp; 15 Combined · Paper 1 &amp; Paper 4 Style
+                  Topics 12, 13, 14, 15 &amp; 16 Combined · Paper 1 &amp; Paper 4 Style
                 </p>
                 <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
                   Synoptic A2 Biology Practice Quiz
                 </h1>
               </div>
               <PracticeQuiz
-                title="Respiration, Photosynthesis, Homeostasis & Coordination Challenge"
+                title="Respiration, Photosynthesis, Homeostasis, Control & Inheritance Challenge"
                 questions={QUIZ_QUESTIONS}
                 answeredMap={answeredMap}
                 onAnswerQuestion={handleAnswerQuestion}
@@ -744,7 +799,7 @@ export default function App() {
       <footer className="border-t border-slate-200/90 bg-white/90 backdrop-blur-md py-4">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-2 px-4 sm:px-8 text-sm text-slate-600">
           <span>
-            Cambridge International A Level Biology (9700) · Topics 12–15
+            Cambridge International A Level Biology (9700) · Topics 12–16
           </span>
           <span>
             {cloudSyncReady
