@@ -1,0 +1,102 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Private teacher or student account profile stored under their authenticated UID.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID matching the document ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Full display name for the teacher or student.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Verified account email address.",
+          "minLength": 3,
+          "maxLength": 120,
+          "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+        },
+        "accountType": {
+          "type": "string",
+          "enum": ["student", "teacher"],
+          "description": "User portal persona chosen during registration."
+        },
+        "classCode": {
+          "type": "string",
+          "description": "Optional class or cohort identifier such as A2-BIO-9700.",
+          "minLength": 0,
+          "maxLength": 32,
+          "pattern": "^[a-zA-Z0-9_\\- ]*$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the profile was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the profile was last updated."
+        }
+      },
+      "required": ["uid", "displayName", "email", "accountType", "createdAt", "updatedAt"]
+    },
+    "QuizProgress": {
+      "title": "Quiz Progress",
+      "description": "Saved Cambridge A2 9700 quiz answers and mastery counts for an authenticated user.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the progress owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "answers": {
+          "type": "object",
+          "description": "Map of syllabus question IDs to selected option indices."
+        },
+        "totalAnswered": {
+          "type": "integer",
+          "description": "Count of questions answered by the user."
+        },
+        "totalCorrect": {
+          "type": "integer",
+          "description": "Count of questions answered correctly."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the progress document was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the progress document was last updated."
+        }
+      },
+      "required": ["ownerId", "answers", "totalAnswered", "totalCorrect", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user profile documents for verified teachers and students."
+    },
+    "/users/{userId}/progress/{progressId}": {
+      "schema": { "$ref": "#/entities/QuizProgress" },
+      "description": "Private quiz answer progress subcollection gated by the parent user profile."
+    }
+  }
+}

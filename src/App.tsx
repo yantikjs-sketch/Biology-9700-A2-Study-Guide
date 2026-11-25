@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { KeyRound, User } from 'lucide-react';
 import { RespirationLab } from './components/respiration/RespirationLab';
 import { PhotosynthesisLab } from './components/photosynthesis/PhotosynthesisLab';
 import { HomeostasisLab } from './components/homeostasis/HomeostasisLab';
@@ -6,33 +7,99 @@ import { ControlCoordinationLab } from './components/control/ControlCoordination
 import { PracticeQuiz } from './components/quiz/PracticeQuiz';
 import { SyllabusRoadmap } from './components/roadmap/SyllabusRoadmap';
 import { TopicQuickNotes } from './components/notes/TopicQuickNotes';
+import { LoginPage } from './components/auth/LoginPage';
+import { AccountModal } from './components/auth/AccountModal';
+import { useAuth } from './context/AuthContext';
 import { QUIZ_QUESTIONS } from './data/syllabusData';
 import { TopicId } from './types/syllabus';
 
 type ActiveTab = TopicId | 'mixed-quiz';
 type TopicSectionMode = 'diagrams' | 'quiz' | 'notes';
 
-const STORAGE_KEY = 'bio9700_quiz_answers_v1';
+const STORAGE_KEY_PREFIX = 'bio9700_quiz_answers_v1';
+
+function getUserStorageKey(uid?: string) {
+  return uid ? `${STORAGE_KEY_PREFIX}_${uid}` : STORAGE_KEY_PREFIX;
+}
 
 export default function App() {
+  const {
+    user,
+    authReady,
+    profile,
+    profileLoading,
+    cloudSyncReady,
+    emailVerified,
+    hasPasswordProvider,
+    loadCloudProgress,
+    saveCloudProgress,
+  } = useAuth();
+
   const [activeTab, setActiveTab] = useState<ActiveTab>('respiration');
   const [topicMode, setTopicMode] = useState<TopicSectionMode>('diagrams');
-  const [answeredMap, setAnsweredMap] = useState<Record<string, number>>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? (JSON.parse(saved) as Record<string, number>) : {};
-    } catch {
-      return {};
-    }
-  });
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
+  const [answeredMap, setAnsweredMap] = useState<Record<string, number>>({});
+  const cloudHydratedUidRef = useRef<string | null>(null);
 
+  // Load local quiz answers scoped to current user when user changes
   useEffect(() => {
+    if (!user) {
+      setAnsweredMap({});
+      cloudHydratedUidRef.current = null;
+      return;
+    }
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(answeredMap));
+      const saved = localStorage.getItem(getUserStorageKey(user.uid));
+      setAnsweredMap(saved ? (JSON.parse(saved) as Record<string, number>) : {});
+    } catch {
+      setAnsweredMap({});
+    }
+  }, [user]);
+
+  // Hydrate from Firestore once verified cloud sync is ready
+  useEffect(() => {
+    if (!user || !cloudSyncReady) return;
+    if (cloudHydratedUidRef.current === user.uid) return;
+    cloudHydratedUidRef.current = user.uid;
+
+    let cancelled = false;
+    void (async () => {
+      const cloudAnswers = await loadCloudProgress();
+      if (cancelled || !cloudAnswers) return;
+      setAnsweredMap((prev) => ({
+        ...cloudAnswers,
+        ...prev,
+      }));
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, cloudSyncReady, loadCloudProgress]);
+
+  // Persist locally and sync to Firestore when verified
+  useEffect(() => {
+    if (!user) return;
+    try {
+      localStorage.setItem(
+        getUserStorageKey(user.uid),
+        JSON.stringify(answeredMap),
+      );
     } catch {
       // Ignore storage quota errors
     }
-  }, [answeredMap]);
+
+    if (!cloudSyncReady) return;
+    const totalCorrect = QUIZ_QUESTIONS.reduce((acc, q) => {
+      return answeredMap[q.id] === q.correctIndex ? acc + 1 : acc;
+    }, 0);
+
+    const timer = window.setTimeout(() => {
+      void saveCloudProgress(answeredMap, totalCorrect);
+    }, 350);
+
+    return () => window.clearTimeout(timer);
+  }, [answeredMap, user, cloudSyncReady, saveCloudProgress]);
 
   const handleAnswerQuestion = (questionId: string, selectedIndex: number) => {
     setAnsweredMap((prev) => ({
@@ -82,11 +149,28 @@ export default function App() {
     return { answered, correct, total: activeTopicQuestions.length };
   }, [activeTopicQuestions, answeredMap]);
 
+  if (!authReady || (user && profileLoading && !profile)) {
+    return (
+      <div className="min-h-screen lab-canvas-bg flex items-center justify-center p-6">
+        <div className="rounded-2xl border border-slate-200 bg-white px-8 py-6 shadow-sm text-center space-y-2">
+          <p className="font-display text-lg font-bold text-slate-900">
+            Bio9700 Revision
+          </p>
+          <p className="text-sm text-slate-600">Loading your workspace...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginPage />;
+  }
+
   return (
     <div className="min-h-screen lab-canvas-bg text-slate-900 flex flex-col">
       {/* Strict 3-Zone Top Bar */}
       <header className="border-b border-slate-200/90 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-4 sm:gap-8 px-4 sm:px-8 py-4">
+        <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-4 sm:gap-6 px-4 sm:px-8 py-4">
           {/* Zone 1: Single-element Brand Wordmark */}
           <button
             type="button"
@@ -161,8 +245,8 @@ export default function App() {
             </button>
           </nav>
 
-          {/* Zone 3: 1 Primary Action */}
-          <div className="shrink-0">
+          {/* Zone 3: Synoptic Quiz & Account Button */}
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab('mixed-quiz')}
@@ -174,12 +258,53 @@ export default function App() {
             >
               Synoptic Quiz
             </button>
+
+            <button
+              type="button"
+              onClick={() => setAccountModalOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50 transition-colors focus-visible:outline-2 focus-visible:outline-blue-600"
+              title="Account & Password Settings"
+            >
+              <User className="h-4 w-4 text-slate-600 shrink-0" />
+              <span className="max-w-[110px] truncate font-semibold">
+                {profile?.displayName || user.email}
+              </span>
+              <span
+                className={`hidden sm:inline text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded ${
+                  profile?.accountType === 'teacher'
+                    ? 'bg-emerald-50 text-emerald-800'
+                    : 'bg-blue-50 text-blue-800'
+                }`}
+              >
+                {profile?.accountType === 'teacher' ? 'Teacher' : 'Student'}
+              </span>
+            </button>
           </div>
         </div>
       </header>
 
       {/* Main Workspace */}
       <main className="mx-auto w-full max-w-[1320px] flex-1 px-4 sm:px-8 py-6 sm:py-8 space-y-6">
+        {(!hasPasswordProvider || !emailVerified) && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-200/90 bg-white/95 px-4 py-3 text-sm text-slate-700 shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <KeyRound className="h-4 w-4 text-blue-700 shrink-0" />
+              <span>
+                {!hasPasswordProvider
+                  ? 'Signed in with Google. Want to create your own personal password for email sign-in?'
+                  : 'Check your inbox to verify your email and enable cloud quiz sync across devices.'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAccountModalOpen(true)}
+              className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800 hover:bg-blue-100 transition-colors"
+            >
+              {!hasPasswordProvider ? 'Create Password' : 'Verify / Account'}
+            </button>
+          </div>
+        )}
+
         {(activeTab === 'respiration' ||
           activeTab === 'photosynthesis' ||
           activeTab === 'homeostasis' ||
@@ -232,7 +357,12 @@ export default function App() {
             </div>
 
             <div className="flex items-center gap-3 text-sm text-slate-600">
-              <span>Cambridge A2 9700</span>
+              <span>
+                {profile?.accountType === 'teacher'
+                  ? 'Teacher Mode'
+                  : 'Cambridge A2 9700'}
+                {profile?.classCode ? ` · ${profile.classCode}` : ''}
+              </span>
               <span aria-hidden="true">·</span>
               <span className="font-mono font-semibold text-slate-900 tabular-nums">
                 Quiz Mastery: {activeTopicStats.correct}/{activeTopicStats.total}
@@ -343,9 +473,18 @@ export default function App() {
           <span>
             Cambridge International A Level Biology (9700) · Topics 12–15
           </span>
-          <span>Progress saved locally in your browser</span>
+          <span>
+            {cloudSyncReady
+              ? 'Quiz progress synced to your account'
+              : 'Progress saved locally in your browser'}
+          </span>
         </div>
       </footer>
+
+      <AccountModal
+        isOpen={accountModalOpen}
+        onClose={() => setAccountModalOpen(false)}
+      />
     </div>
   );
 }
