@@ -75,6 +75,25 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
+    function isValidRevisionSubmission(data, topicId) {
+      return data.keys().hasAll(['ownerId', 'topicId', 'responses', 'submittedMap', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'topicId', 'responses', 'submittedMap', 'createdAt', 'updatedAt'])
+        && data.ownerId is string
+        && data.ownerId.size() >= 1
+        && data.ownerId.size() <= 128
+        && data.ownerId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.ownerId == request.auth.uid
+        && data.topicId is string
+        && data.topicId in ['respiration', 'photosynthesis', 'homeostasis', 'control']
+        && data.topicId == topicId
+        && data.responses is map
+        && data.responses.size() <= 30
+        && data.submittedMap is map
+        && data.submittedMap.size() <= 30
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
     function hasValidParentProfile(userId) {
       return exists(/databases/$(database)/documents/users/$(userId))
         && get(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
@@ -131,6 +150,41 @@ service cloud.firestore {
         allow delete: if isVerifiedEmail()
           && isValidId(userId)
           && isValidId(progressId)
+          && isOwner(userId)
+          && hasValidParentProfile(userId);
+      }
+
+      match /revisions/{topicId} {
+        allow get: if isVerifiedEmail()
+          && isValidId(userId)
+          && isValidId(topicId)
+          && isOwner(userId)
+          && hasValidParentProfile(userId);
+        allow list: if isVerifiedEmail()
+          && isOwner(userId)
+          && resource.data.ownerId == request.auth.uid;
+        allow create: if isVerifiedEmail()
+          && isValidId(userId)
+          && isValidId(topicId)
+          && isOwner(userId)
+          && isValidRevisionSubmission(incoming(), topicId)
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && hasValidParentProfile(userId);
+        allow update: if isVerifiedEmail()
+          && isValidId(userId)
+          && isValidId(topicId)
+          && isOwner(userId)
+          && isValidRevisionSubmission(incoming(), topicId)
+          && incoming().ownerId == existing().ownerId
+          && incoming().topicId == existing().topicId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['responses', 'submittedMap', 'updatedAt'])
+          && hasValidParentProfile(userId);
+        allow delete: if isVerifiedEmail()
+          && isValidId(userId)
+          && isValidId(topicId)
           && isOwner(userId)
           && hasValidParentProfile(userId);
       }

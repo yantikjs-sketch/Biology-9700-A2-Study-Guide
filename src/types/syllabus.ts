@@ -1,15 +1,16 @@
-export type TopicId =
+export type ChapterTopicId =
   | 'respiration'
   | 'photosynthesis'
   | 'homeostasis'
-  | 'control'
-  | 'roadmap';
+  | 'control';
+
+export type TopicId = ChapterTopicId | 'roadmap';
 
 export type QuizDifficulty = 'Core Recall' | 'Application & Data';
 
 export interface QuizQuestion {
   id: string;
-  topicId: 'respiration' | 'photosynthesis' | 'homeostasis' | 'control';
+  topicId: ChapterTopicId;
   syllabusRef: string;
   difficulty: QuizDifficulty;
   prompt: string;
@@ -18,6 +19,20 @@ export interface QuizQuestion {
   correctIndex: number;
   hint: string;
   markSchemeExplanation: string;
+  keyTerms: string[];
+}
+
+export interface RevisionQuestion {
+  id: string;
+  topicId: ChapterTopicId;
+  syllabusRef: string;
+  commandWord: 'Explain' | 'Outline' | 'Describe' | 'Calculate' | 'Compare';
+  marks: number;
+  prompt: string;
+  contextNote?: string;
+  hint: string;
+  markSchemePoints: string[];
+  modelAnswer: string;
   keyTerms: string[];
 }
 

@@ -87,6 +87,44 @@
         }
       },
       "required": ["ownerId", "answers", "totalAnswered", "totalCorrect", "createdAt", "updatedAt"]
+    },
+    "RevisionSubmission": {
+      "title": "Chapter Revision Submission",
+      "description": "Saved structured revision question answers and submission states per chapter for an authenticated user.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the submission owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "topicId": {
+          "type": "string",
+          "enum": ["respiration", "photosynthesis", "homeostasis", "control"],
+          "description": "Chapter identifier for this revision question set."
+        },
+        "responses": {
+          "type": "object",
+          "description": "Map of revision question IDs to student written answers."
+        },
+        "submittedMap": {
+          "type": "object",
+          "description": "Map of revision question IDs to boolean submission flags."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the revision record was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the revision record was last updated."
+        }
+      },
+      "required": ["ownerId", "topicId", "responses", "submittedMap", "createdAt", "updatedAt"]
     }
   },
   "firestore": {
@@ -97,6 +135,10 @@
     "/users/{userId}/progress/{progressId}": {
       "schema": { "$ref": "#/entities/QuizProgress" },
       "description": "Private quiz answer progress subcollection gated by the parent user profile."
+    },
+    "/users/{userId}/revisions/{topicId}": {
+      "schema": { "$ref": "#/entities/RevisionSubmission" },
+      "description": "Private chapter structured revision answers and submitted flags gated by the parent user profile."
     }
   }
 }

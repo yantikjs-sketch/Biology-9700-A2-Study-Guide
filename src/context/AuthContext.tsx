@@ -44,6 +44,7 @@ import {
   isPasswordStrong,
   UserProfileData,
 } from '../types/auth';
+import { ChapterTopicId } from '../types/syllabus';
 
 interface PendingProfilePayload {
   displayName: string;
@@ -88,6 +89,17 @@ interface AuthContextValue {
   saveCloudProgress: (
     answers: Record<string, number>,
     totalCorrect: number,
+  ) => Promise<void>;
+  loadCloudRevision: (
+    topicId: ChapterTopicId,
+  ) => Promise<{
+    responses: Record<string, string>;
+    submittedMap: Record<string, boolean>;
+  } | null>;
+  saveCloudRevision: (
+    topicId: ChapterTopicId,
+    responses: Record<string, string>,
+    submittedMap: Record<string, boolean>,
   ) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -555,6 +567,104 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [cloudSyncReady],
   );
 
+  const loadCloudRevision = useCallback(
+    async (topicId: ChapterTopicId) => {
+      const currentUser = auth.currentUser;
+      if (!currentUser || !currentUser.emailVerified || !cloudSyncReady) {
+        return null;
+      }
+      const path = `users/${currentUser.uid}/revisions/${topicId}`;
+      try {
+        const snap = await getDoc(
+          doc(db, 'users', currentUser.uid, 'revisions', topicId),
+        );
+        if (!snap.exists()) return null;
+        const data = snap.data();
+        const responses: Record<string, string> = {};
+        const submittedMap: Record<string, boolean> = {};
+        if (data.responses && typeof data.responses === 'object') {
+          for (const [k, v] of Object.entries(
+            data.responses as Record<string, unknown>,
+          )) {
+            if (typeof v === 'string') {
+              responses[k] = v.slice(
+                0,
+                AUTH_VALIDATION.REVISION_RESPONSE_MAX_LENGTH,
+              );
+            }
+          }
+        }
+        if (data.submittedMap && typeof data.submittedMap === 'object') {
+          for (const [k, v] of Object.entries(
+            data.submittedMap as Record<string, unknown>,
+          )) {
+            if (v === true) {
+              submittedMap[k] = true;
+            }
+          }
+        }
+        return { responses, submittedMap };
+      } catch (error) {
+        handleFirestoreError(error, OperationType.GET, path);
+      }
+    },
+    [cloudSyncReady],
+  );
+
+  const saveCloudRevision = useCallback(
+    async (
+      topicId: ChapterTopicId,
+      responses: Record<string, string>,
+      submittedMap: Record<string, boolean>,
+    ) => {
+      const currentUser = auth.currentUser;
+      if (!currentUser || !currentUser.emailVerified || !cloudSyncReady) {
+        return;
+      }
+
+      const boundedResponses = Object.fromEntries(
+        Object.entries(responses)
+          .slice(0, AUTH_VALIDATION.MAX_REVISION_QUESTIONS_PER_CHAPTER)
+          .map(([k, v]) => [
+            k,
+            String(v).slice(0, AUTH_VALIDATION.REVISION_RESPONSE_MAX_LENGTH),
+          ]),
+      );
+
+      const boundedSubmitted = Object.fromEntries(
+        Object.entries(submittedMap)
+          .filter(([, v]) => v === true)
+          .slice(0, AUTH_VALIDATION.MAX_REVISION_QUESTIONS_PER_CHAPTER),
+      );
+
+      const path = `users/${currentUser.uid}/revisions/${topicId}`;
+      const revRef = doc(db, 'users', currentUser.uid, 'revisions', topicId);
+
+      try {
+        const existingSnap = await getDoc(revRef);
+        if (existingSnap.exists()) {
+          await updateDoc(revRef, {
+            responses: boundedResponses,
+            submittedMap: boundedSubmitted,
+            updatedAt: serverTimestamp(),
+          });
+        } else {
+          await setDoc(revRef, {
+            ownerId: currentUser.uid,
+            topicId,
+            responses: boundedResponses,
+            submittedMap: boundedSubmitted,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+        }
+      } catch (error) {
+        handleFirestoreError(error, OperationType.WRITE, path);
+      }
+    },
+    [cloudSyncReady],
+  );
+
   const signOut = useCallback(async () => {
     await firebaseSignOut(auth);
   }, []);
@@ -583,6 +693,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       updateAccountProfile,
       loadCloudProgress,
       saveCloudProgress,
+      loadCloudRevision,
+      saveCloudRevision,
       signOut,
     }),
     [
@@ -602,6 +714,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       updateAccountProfile,
       loadCloudProgress,
       saveCloudProgress,
+      loadCloudRevision,
+      saveCloudRevision,
       signOut,
     ],
   );

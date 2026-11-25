@@ -5,21 +5,34 @@ import { PhotosynthesisLab } from './components/photosynthesis/PhotosynthesisLab
 import { HomeostasisLab } from './components/homeostasis/HomeostasisLab';
 import { ControlCoordinationLab } from './components/control/ControlCoordinationLab';
 import { PracticeQuiz } from './components/quiz/PracticeQuiz';
+import { RevisionQuestionsPanel } from './components/quiz/RevisionQuestionsPanel';
 import { SyllabusRoadmap } from './components/roadmap/SyllabusRoadmap';
 import { TopicQuickNotes } from './components/notes/TopicQuickNotes';
 import { LoginPage } from './components/auth/LoginPage';
 import { AccountModal } from './components/auth/AccountModal';
 import { useAuth } from './context/AuthContext';
 import { QUIZ_QUESTIONS } from './data/syllabusData';
-import { TopicId } from './types/syllabus';
+import { REVISION_QUESTIONS } from './data/revisionQuestionsData';
+import { ChapterTopicId, TopicId } from './types/syllabus';
 
 type ActiveTab = TopicId | 'mixed-quiz';
-type TopicSectionMode = 'diagrams' | 'quiz' | 'notes';
+type TopicSectionMode = 'diagrams' | 'revision' | 'quiz' | 'notes';
 
 const STORAGE_KEY_PREFIX = 'bio9700_quiz_answers_v1';
+const REVISION_STORAGE_PREFIX = 'bio9700_revision_v1';
+const CHAPTER_TOPICS: ChapterTopicId[] = [
+  'respiration',
+  'photosynthesis',
+  'homeostasis',
+  'control',
+];
 
 function getUserStorageKey(uid?: string) {
   return uid ? `${STORAGE_KEY_PREFIX}_${uid}` : STORAGE_KEY_PREFIX;
+}
+
+function getUserRevisionKey(uid?: string) {
+  return uid ? `${REVISION_STORAGE_PREFIX}_${uid}` : REVISION_STORAGE_PREFIX;
 }
 
 export default function App() {
@@ -33,18 +46,28 @@ export default function App() {
     hasPasswordProvider,
     loadCloudProgress,
     saveCloudProgress,
+    loadCloudRevision,
+    saveCloudRevision,
   } = useAuth();
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('respiration');
   const [topicMode, setTopicMode] = useState<TopicSectionMode>('diagrams');
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [answeredMap, setAnsweredMap] = useState<Record<string, number>>({});
+  const [revisionResponses, setRevisionResponses] = useState<
+    Record<string, string>
+  >({});
+  const [revisionSubmittedMap, setRevisionSubmittedMap] = useState<
+    Record<string, boolean>
+  >({});
   const cloudHydratedUidRef = useRef<string | null>(null);
 
-  // Load local quiz answers scoped to current user when user changes
+  // Load local quiz & revision answers scoped to current user when user changes
   useEffect(() => {
     if (!user) {
       setAnsweredMap({});
+      setRevisionResponses({});
+      setRevisionSubmittedMap({});
       cloudHydratedUidRef.current = null;
       return;
     }
@@ -53,6 +76,23 @@ export default function App() {
       setAnsweredMap(saved ? (JSON.parse(saved) as Record<string, number>) : {});
     } catch {
       setAnsweredMap({});
+    }
+    try {
+      const savedRev = localStorage.getItem(getUserRevisionKey(user.uid));
+      if (savedRev) {
+        const parsed = JSON.parse(savedRev) as {
+          responses?: Record<string, string>;
+          submittedMap?: Record<string, boolean>;
+        };
+        setRevisionResponses(parsed.responses ?? {});
+        setRevisionSubmittedMap(parsed.submittedMap ?? {});
+      } else {
+        setRevisionResponses({});
+        setRevisionSubmittedMap({});
+      }
+    } catch {
+      setRevisionResponses({});
+      setRevisionSubmittedMap({});
     }
   }, [user]);
 
@@ -64,20 +104,40 @@ export default function App() {
 
     let cancelled = false;
     void (async () => {
-      const cloudAnswers = await loadCloudProgress();
-      if (cancelled || !cloudAnswers) return;
-      setAnsweredMap((prev) => ({
-        ...cloudAnswers,
-        ...prev,
-      }));
+      const [cloudAnswers, cloudRevisions] = await Promise.all([
+        loadCloudProgress(),
+        Promise.all(CHAPTER_TOPICS.map((topicId) => loadCloudRevision(topicId))),
+      ]);
+      if (cancelled) return;
+      if (cloudAnswers) {
+        setAnsweredMap((prev) => ({
+          ...cloudAnswers,
+          ...prev,
+        }));
+      }
+      const mergedResponses: Record<string, string> = {};
+      const mergedSubmitted: Record<string, boolean> = {};
+      for (const rev of cloudRevisions) {
+        if (rev) {
+          Object.assign(mergedResponses, rev.responses);
+          Object.assign(mergedSubmitted, rev.submittedMap);
+        }
+      }
+      if (
+        Object.keys(mergedResponses).length > 0 ||
+        Object.keys(mergedSubmitted).length > 0
+      ) {
+        setRevisionResponses((prev) => ({ ...mergedResponses, ...prev }));
+        setRevisionSubmittedMap((prev) => ({ ...mergedSubmitted, ...prev }));
+      }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [user, cloudSyncReady, loadCloudProgress]);
+  }, [user, cloudSyncReady, loadCloudProgress, loadCloudRevision]);
 
-  // Persist locally and sync to Firestore when verified
+  // Persist quiz answers locally and sync to Firestore when verified
   useEffect(() => {
     if (!user) return;
     try {
@@ -101,10 +161,51 @@ export default function App() {
     return () => window.clearTimeout(timer);
   }, [answeredMap, user, cloudSyncReady, saveCloudProgress]);
 
+  // Persist structured revision answers locally and sync active chapter to Firestore
+  useEffect(() => {
+    if (!user) return;
+    try {
+      localStorage.setItem(
+        getUserRevisionKey(user.uid),
+        JSON.stringify({
+          responses: revisionResponses,
+          submittedMap: revisionSubmittedMap,
+        }),
+      );
+    } catch {
+      // Ignore storage quota errors
+    }
+  }, [revisionResponses, revisionSubmittedMap, user]);
+
+  const syncTopicRevisionToCloud = (
+    topicId: ChapterTopicId,
+    nextResponses: Record<string, string>,
+    nextSubmitted: Record<string, boolean>,
+  ) => {
+    if (!user || !cloudSyncReady) return;
+    const chapterIds = new Set(
+      REVISION_QUESTIONS.filter((q) => q.topicId === topicId).map((q) => q.id),
+    );
+    const topicResponses: Record<string, string> = {};
+    const topicSubmitted: Record<string, boolean> = {};
+    for (const id of chapterIds) {
+      if (nextResponses[id]) topicResponses[id] = nextResponses[id];
+      if (nextSubmitted[id]) topicSubmitted[id] = true;
+    }
+    void saveCloudRevision(topicId, topicResponses, topicSubmitted);
+  };
+
   const handleAnswerQuestion = (questionId: string, selectedIndex: number) => {
     setAnsweredMap((prev) => ({
       ...prev,
       [questionId]: selectedIndex,
+    }));
+  };
+
+  const handleAnswerBatch = (entries: Record<string, number>) => {
+    setAnsweredMap((prev) => ({
+      ...prev,
+      ...entries,
     }));
   };
 
@@ -116,6 +217,62 @@ export default function App() {
       }
       return next;
     });
+  };
+
+  const handleChangeRevisionResponse = (questionId: string, value: string) => {
+    setRevisionResponses((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
+  };
+
+  const handleSubmitRevisionQuestion = (
+    topicId: ChapterTopicId,
+    questionId: string,
+  ) => {
+    const nextSubmitted = {
+      ...revisionSubmittedMap,
+      [questionId]: true,
+    };
+    setRevisionSubmittedMap(nextSubmitted);
+    syncTopicRevisionToCloud(topicId, revisionResponses, nextSubmitted);
+  };
+
+  const handleSubmitAllRevisionDrafted = (
+    topicId: ChapterTopicId,
+    questionIds: string[],
+  ) => {
+    const nextSubmitted = { ...revisionSubmittedMap };
+    for (const id of questionIds) {
+      nextSubmitted[id] = true;
+    }
+    setRevisionSubmittedMap(nextSubmitted);
+    syncTopicRevisionToCloud(topicId, revisionResponses, nextSubmitted);
+  };
+
+  const handleResetRevisionQuestion = (
+    topicId: ChapterTopicId,
+    questionId: string,
+  ) => {
+    const nextSubmitted = { ...revisionSubmittedMap };
+    delete nextSubmitted[questionId];
+    setRevisionSubmittedMap(nextSubmitted);
+    syncTopicRevisionToCloud(topicId, revisionResponses, nextSubmitted);
+  };
+
+  const handleResetAllRevision = (
+    topicId: ChapterTopicId,
+    questionIds: string[],
+  ) => {
+    const nextResponses = { ...revisionResponses };
+    const nextSubmitted = { ...revisionSubmittedMap };
+    for (const id of questionIds) {
+      delete nextResponses[id];
+      delete nextSubmitted[id];
+    }
+    setRevisionResponses(nextResponses);
+    setRevisionSubmittedMap(nextSubmitted);
+    syncTopicRevisionToCloud(topicId, nextResponses, nextSubmitted);
   };
 
   const handleSelectTopicFromRoadmap = (topicId: TopicId, openQuiz = false) => {
@@ -135,6 +292,18 @@ export default function App() {
       return QUIZ_QUESTIONS.filter((q) => q.topicId === activeTab);
     }
     return QUIZ_QUESTIONS;
+  }, [activeTab]);
+
+  const activeTopicRevisionQuestions = useMemo(() => {
+    if (
+      activeTab === 'respiration' ||
+      activeTab === 'photosynthesis' ||
+      activeTab === 'homeostasis' ||
+      activeTab === 'control'
+    ) {
+      return REVISION_QUESTIONS.filter((q) => q.topicId === activeTab);
+    }
+    return [];
   }, [activeTab]);
 
   const activeTopicStats = useMemo(() => {
@@ -331,6 +500,19 @@ export default function App() {
               <button
                 type="button"
                 role="tab"
+                aria-selected={topicMode === 'revision'}
+                onClick={() => setTopicMode('revision')}
+                className={`whitespace-nowrap shrink-0 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                  topicMode === 'revision'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Revision Questions ({activeTopicRevisionQuestions.length})
+              </button>
+              <button
+                type="button"
+                role="tab"
                 aria-selected={topicMode === 'quiz'}
                 onClick={() => setTopicMode('quiz')}
                 className={`whitespace-nowrap shrink-0 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
@@ -376,12 +558,35 @@ export default function App() {
           {activeTab === 'respiration' && (
             <>
               {topicMode === 'diagrams' && <RespirationLab />}
+              {topicMode === 'revision' && (
+                <RevisionQuestionsPanel
+                  subtitle="Chapter 12 · Cambridge 9700 Paper 4 Structured Revision"
+                  title="Energy and Respiration — Revision Questions"
+                  questions={activeTopicRevisionQuestions}
+                  responses={revisionResponses}
+                  submittedMap={revisionSubmittedMap}
+                  onChangeResponse={handleChangeRevisionResponse}
+                  onSubmitQuestion={(qId) =>
+                    handleSubmitRevisionQuestion('respiration', qId)
+                  }
+                  onSubmitAllDrafted={(qIds) =>
+                    handleSubmitAllRevisionDrafted('respiration', qIds)
+                  }
+                  onResetQuestion={(qId) =>
+                    handleResetRevisionQuestion('respiration', qId)
+                  }
+                  onResetAll={(qIds) =>
+                    handleResetAllRevision('respiration', qIds)
+                  }
+                />
+              )}
               {topicMode === 'quiz' && (
                 <PracticeQuiz
                   title="Topic 12: Energy and Respiration — 9700 Practice Quiz"
                   questions={activeTopicQuestions}
                   answeredMap={answeredMap}
                   onAnswerQuestion={handleAnswerQuestion}
+                  onAnswerBatch={handleAnswerBatch}
                   onResetTopicQuiz={handleResetQuizIds}
                 />
               )}
@@ -392,12 +597,35 @@ export default function App() {
           {activeTab === 'photosynthesis' && (
             <>
               {topicMode === 'diagrams' && <PhotosynthesisLab />}
+              {topicMode === 'revision' && (
+                <RevisionQuestionsPanel
+                  subtitle="Chapter 13 · Cambridge 9700 Paper 4 Structured Revision"
+                  title="Photosynthesis — Revision Questions"
+                  questions={activeTopicRevisionQuestions}
+                  responses={revisionResponses}
+                  submittedMap={revisionSubmittedMap}
+                  onChangeResponse={handleChangeRevisionResponse}
+                  onSubmitQuestion={(qId) =>
+                    handleSubmitRevisionQuestion('photosynthesis', qId)
+                  }
+                  onSubmitAllDrafted={(qIds) =>
+                    handleSubmitAllRevisionDrafted('photosynthesis', qIds)
+                  }
+                  onResetQuestion={(qId) =>
+                    handleResetRevisionQuestion('photosynthesis', qId)
+                  }
+                  onResetAll={(qIds) =>
+                    handleResetAllRevision('photosynthesis', qIds)
+                  }
+                />
+              )}
               {topicMode === 'quiz' && (
                 <PracticeQuiz
                   title="Topic 13: Photosynthesis — 9700 Practice Quiz"
                   questions={activeTopicQuestions}
                   answeredMap={answeredMap}
                   onAnswerQuestion={handleAnswerQuestion}
+                  onAnswerBatch={handleAnswerBatch}
                   onResetTopicQuiz={handleResetQuizIds}
                 />
               )}
@@ -410,12 +638,35 @@ export default function App() {
           {activeTab === 'homeostasis' && (
             <>
               {topicMode === 'diagrams' && <HomeostasisLab />}
+              {topicMode === 'revision' && (
+                <RevisionQuestionsPanel
+                  subtitle="Chapter 14 · Cambridge 9700 Paper 4 Structured Revision"
+                  title="Homeostasis — Revision Questions"
+                  questions={activeTopicRevisionQuestions}
+                  responses={revisionResponses}
+                  submittedMap={revisionSubmittedMap}
+                  onChangeResponse={handleChangeRevisionResponse}
+                  onSubmitQuestion={(qId) =>
+                    handleSubmitRevisionQuestion('homeostasis', qId)
+                  }
+                  onSubmitAllDrafted={(qIds) =>
+                    handleSubmitAllRevisionDrafted('homeostasis', qIds)
+                  }
+                  onResetQuestion={(qId) =>
+                    handleResetRevisionQuestion('homeostasis', qId)
+                  }
+                  onResetAll={(qIds) =>
+                    handleResetAllRevision('homeostasis', qIds)
+                  }
+                />
+              )}
               {topicMode === 'quiz' && (
                 <PracticeQuiz
                   title="Topic 14: Homeostasis — 9700 Practice Quiz"
                   questions={activeTopicQuestions}
                   answeredMap={answeredMap}
                   onAnswerQuestion={handleAnswerQuestion}
+                  onAnswerBatch={handleAnswerBatch}
                   onResetTopicQuiz={handleResetQuizIds}
                 />
               )}
@@ -426,12 +677,33 @@ export default function App() {
           {activeTab === 'control' && (
             <>
               {topicMode === 'diagrams' && <ControlCoordinationLab />}
+              {topicMode === 'revision' && (
+                <RevisionQuestionsPanel
+                  subtitle="Chapter 15 · Cambridge 9700 Paper 4 Structured Revision"
+                  title="Control and Coordination — Revision Questions"
+                  questions={activeTopicRevisionQuestions}
+                  responses={revisionResponses}
+                  submittedMap={revisionSubmittedMap}
+                  onChangeResponse={handleChangeRevisionResponse}
+                  onSubmitQuestion={(qId) =>
+                    handleSubmitRevisionQuestion('control', qId)
+                  }
+                  onSubmitAllDrafted={(qIds) =>
+                    handleSubmitAllRevisionDrafted('control', qIds)
+                  }
+                  onResetQuestion={(qId) =>
+                    handleResetRevisionQuestion('control', qId)
+                  }
+                  onResetAll={(qIds) => handleResetAllRevision('control', qIds)}
+                />
+              )}
               {topicMode === 'quiz' && (
                 <PracticeQuiz
                   title="Topic 15: Control and Coordination — 9700 Practice Quiz"
                   questions={activeTopicQuestions}
                   answeredMap={answeredMap}
                   onAnswerQuestion={handleAnswerQuestion}
+                  onAnswerBatch={handleAnswerBatch}
                   onResetTopicQuiz={handleResetQuizIds}
                 />
               )}
@@ -461,6 +733,7 @@ export default function App() {
                 questions={QUIZ_QUESTIONS}
                 answeredMap={answeredMap}
                 onAnswerQuestion={handleAnswerQuestion}
+                onAnswerBatch={handleAnswerBatch}
                 onResetTopicQuiz={handleResetQuizIds}
               />
             </div>
